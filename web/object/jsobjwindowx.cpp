@@ -39,10 +39,7 @@ void JSOBJWindowx::quit()
 {
     qobject_cast<QWidget*>(qobject_cast<QWebPage*>(parent())->view()->parent())->close();
 }
-void JSOBJWindowx::refresh()
-{
-    qobject_cast<QWebView*>(qobject_cast<QWebPage*>(parent())->view())->reload();
-}
+
 void JSOBJWindowx::closeChildWindow(const QString title)
 {
     QMap<QString ,UIC::PopupWindow*> *children=BROWSER->getMainWindow()->getChildWindow();

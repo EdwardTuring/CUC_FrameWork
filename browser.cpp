@@ -8,7 +8,9 @@ Browser::Browser(QObject *parent) :
     QObject(parent)
 {
     handleConfig();
+    time_openwindow_ = new QTimer(this); //初始化定时器
     QPixmap pixmap(":/init_pic.jpg");
+
     splash_ = new SplashScreen(pixmap);
      qApp->processEvents();
     splash_->show();
@@ -34,7 +36,8 @@ Browser::Browser(QObject *parent) :
     }
 
 
-    CONNECT(this->browser_->view()->page(),loadFinished(bool),this,finishLoad());
+    CONNECT(this->browser_->view()->page(),loadFinished(bool),this,startTimeCount());
+    CONNECT(this->time_openwindow_,timeout(),this,finishLoad());
 
     while(100==this->browser_->getProcess()){}
 
@@ -100,9 +103,15 @@ void Browser::writeDefualtConfig(QSettings &config)
 
     }
 }
+void Browser::startTimeCount()
+{
+     this->time_openwindow_->start(2500);
+
+}
 
 void Browser::finishLoad()
 {
+
 
     if(splash_)
     {

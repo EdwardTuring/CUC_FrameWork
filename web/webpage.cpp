@@ -2,7 +2,6 @@
 #include "qt4.h"
 #include <QWebFrame>
 #include "browser.h"
-#include "../gui/confirmbox.h"
 #include "../gui/mainwindow.h"
 #include "../gui/popupwindow.h"
 
@@ -18,24 +17,15 @@ WebPage::WebPage(QWidget *parent):QWebPage(parent)
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
 {
 
+    QMessageBox::information(BROWSER->getMainWindow(), "警告", Qt::escape(msg), QMessageBox::Ok);
 
-        QMessageBox msgBox;
-    msgBox.setWindowTitle("提示");
-    msgBox.setIcon(QMessageBox::Information);
-     msgBox.setText(msg);
-
-        MOVETOBROWSERCENTER(msgBox);
-     msgBox.exec();
 }
 bool WebPage::javaScriptConfirm( QWebFrame * frame, const QString & msg )
 {
-    bool value=true;
-    UIC::ConfirmBox msgBox(msg,&value);
-        MOVETOBROWSERCENTER(msgBox);
-        msgBox.exec();
-        return value;
+    return QMessageBox::Yes == QMessageBox::information(BROWSER->getMainWindow(), "操作确认",Qt::escape(msg), QMessageBox::Yes, QMessageBox::No);
 
 }
+
 
 QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
 {
@@ -60,8 +50,12 @@ QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
     children->insert(title,wnd);
     wnd->setTitle(title);
 
-    wnd->Move(feature.x,feature.y);
-    wnd->ReSize(feature.width,feature.height);
+    QDesktopWidget* desktopWidget = QApplication::desktop();
+        //获取可用桌面大小
+        QRect d = desktopWidget->availableGeometry();
+        wnd->move((d.width()-feature.width)/2,(d.height()-feature.height)/2);
+
+        wnd->ReSize(feature.width,feature.height);
     if(feature.maxsize)
         wnd->showMaxsize();
      if(feature.fullscreen)

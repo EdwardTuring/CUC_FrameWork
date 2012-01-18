@@ -26,7 +26,9 @@ int main(int argc, char * argv[])
 {
     QApplication app(argc, argv);
     setCodec();
-
+    QTranslator translator;
+     translator.load(":/qt_zh_CN.qm");
+     app.installTranslator(&translator);
     QString sPath = app.applicationDirPath();
     sPath += QString("/plugins");
    app.addLibraryPath(sPath);

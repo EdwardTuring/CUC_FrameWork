@@ -51,7 +51,7 @@ protected slots:
     void changePos();
     void setProgress(int p);
     void setMaxSize();
-
+    void toFullOrNormalScreen();
 
 
 protected:
@@ -65,13 +65,10 @@ protected:
 
 private:
     QRect availableGeometry;
-     QAction *act_fullscreen_;
-     QAction *act_normalscreen_;
-     QAction *act_reload_;
-     QAction *act_back_;
-     QAction *act_forward_;
+
      QShortcut  *sht_fullscreen_;
      QShortcut  *sht_reload_;
+     QShortcut *sht_normalscreen_;
 
      QMap<QString ,UIC::PopupWindow*> *childwnd_;
 

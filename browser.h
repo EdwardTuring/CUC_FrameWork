@@ -24,6 +24,7 @@ public:
     UIC::SplashScreen *getSplashScreen(){return splash_;}
 protected slots:
     void finishLoad();
+    void startTimeCount();
 private:
 
     void handleConfig();
@@ -43,6 +44,8 @@ private:
 
      MainWindow *browser_;
      UIC::SplashScreen *splash_; //程序的载入页面
+
+     QTimer *time_openwindow_;//打开窗口的定时器
 };
 } //namespace UIC
 #endif // BROWESER_H

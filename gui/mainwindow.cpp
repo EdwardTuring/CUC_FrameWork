@@ -58,8 +58,8 @@ void MainWindow::toFullScreen()
     if(!this->isFullScreen()){
     if(!this->ismaxsize_){
         this->normalsize_=this->size();
-
-        this->window_pos_=this->pos();
+        QPoint p(pos().x(),pos().y()+30);
+        this->window_pos_=p;
     }
     this->showFullScreen();
 
@@ -84,6 +84,17 @@ void MainWindow::toNormalScreen()
     }
     }
 }
+void MainWindow::toFullOrNormalScreen()
+{
+    if(this->isFullScreen())
+    {
+        this->toNormalScreen();
+    }
+    else
+    {
+        this->toFullScreen();
+    }
+}
 
 void MainWindow::showMaxSizeScreen()
 {
@@ -102,26 +113,14 @@ void MainWindow::setMaxSize()
 
 void MainWindow::setActionsAndShortCuts()
 {
-    this->act_fullscreen_=new QAction("全屏显示",view_);
-     this->act_normalscreen_=new QAction("退出全屏   (ESC)",view_);
-     this->act_back_=new QAction("退后 ",view_);
-    this->act_forward_=new QAction("向前",view_);
-    this->act_reload_=new QAction("刷新    (F5)",view_);
-    connect(act_fullscreen_, SIGNAL(triggered(bool)), this, SLOT(toFullScreen()));
-    CONNECT(act_back_,triggered(bool),view_,back());
-    CONNECT(act_forward_,triggered(bool),view_ ,forward());
-    CONNECT(act_reload_,triggered(bool),view_,reload());
+
    sht_fullscreen_= new QShortcut(QKeySequence(tr("ESC")), this);
      sht_reload_= new QShortcut(QKeySequence(tr("F5")), this);
+     sht_normalscreen_=new QShortcut(QKeySequence(tr("F11")),this);
     connect( sht_fullscreen_, SIGNAL( activated() ), this, SLOT( toNormalScreen() ) );
     CONNECT(sht_reload_,activated(),view_,reload());
-    connect(act_normalscreen_, SIGNAL(triggered(bool)), this, SLOT(toNormalScreen()));
-    view_->addAction(act_fullscreen_);
-    view_->addAction(act_normalscreen_);
-    view_->addAction(act_reload_);
-    view_->addAction(act_back_);
-    view_->addAction(act_forward_);
-    view_->setContextMenuPolicy(Qt::ActionsContextMenu);
+     CONNECT(sht_normalscreen_,activated(),this,toFullOrNormalScreen());
+    view_->setContextMenuPolicy(Qt::NoContextMenu);
 }
 
 

@@ -20,7 +20,7 @@ SOURCES =   main.cpp \
     web/object/jsobjwindowx.cpp
 RESOURCES = \
     resource/icon.qrc
-
+TARGET =UICreator
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
 sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro
