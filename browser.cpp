@@ -13,7 +13,7 @@ Browser::Browser(QObject *parent) :
      qApp->processEvents();
     splash_->show();
 
-      splash_->showMessage("正在为你载入UICreator v1.210...");
+      splash_->showMessage("正在为你载入UICreator v1.211...");
      this->browser_=new MainWindow(url_,title_);
 
 
