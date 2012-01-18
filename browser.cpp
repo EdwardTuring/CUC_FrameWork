@@ -12,14 +12,13 @@ Browser::Browser(QObject *parent) :
     QPixmap pixmap(":/init_pic.jpg");
 
     splash_ = new SplashScreen(pixmap);
-     qApp->processEvents();
+    qApp->processEvents();
     splash_->show();
 
-      splash_->showMessage("正在为你载入UICreator v1.211...");
-     this->browser_=new MainWindow(url_,title_);
-
-
+    splash_->showMessage("正在为你载入UICreator v1.211...");
+    this->browser_=new MainWindow(url_,title_);
     browser_->setWindowIcon(QIcon(":icon.png"));
+
     if(this->ismaxsize_)
     {
 
@@ -105,7 +104,7 @@ void Browser::writeDefualtConfig(QSettings &config)
 }
 void Browser::startTimeCount()
 {
-     this->time_openwindow_->start(2500);
+     this->time_openwindow_->start(3000);
 
 }
 
