@@ -104,7 +104,7 @@ void Browser::writeDefualtConfig(QSettings &config)
 }
 void Browser::startTimeCount()
 {
-     this->time_openwindow_->start(3000);
+     this->time_openwindow_->start(2500);
 
 }
 
