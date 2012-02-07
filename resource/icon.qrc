@@ -3,7 +3,7 @@
         <file>icon.ico</file>
         <file>icon.png</file>
         <file>init_pic.jpg</file>
-        <file>qt_zh_CN.qm</file>
         <file>jquery.min.js</file>
+        <file>qt_zh_CN.qm</file>
     </qresource>
 </RCC>

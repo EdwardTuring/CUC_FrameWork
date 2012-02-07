@@ -17,12 +17,12 @@ WebPage::WebPage(QWidget *parent):QWebPage(parent)
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
 {
 
-    QMessageBox::information(BROWSER->getMainWindow(), "警告", Qt::escape(msg), QMessageBox::Ok);
+    QMessageBox::information(BROWSER->getMainWindow(), "提示", Qt::escape(msg), QMessageBox::Ok);
 
 }
 bool WebPage::javaScriptConfirm( QWebFrame * frame, const QString & msg )
 {
-    return QMessageBox::Yes == QMessageBox::information(BROWSER->getMainWindow(), "操作确认",Qt::escape(msg), QMessageBox::Yes, QMessageBox::No);
+    return QMessageBox::Yes == QMessageBox::information(BROWSER->getMainWindow(), "操作确认",Qt::escape(msg), "确定","取消");
 
 }
 

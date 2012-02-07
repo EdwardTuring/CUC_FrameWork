@@ -15,7 +15,7 @@ Browser::Browser(QObject *parent) :
     qApp->processEvents();
     splash_->show();
 
-    splash_->showMessage("正在为你载入UICreator v1.212...");
+    splash_->showMessage("正在为你载入UICreator v1.213...");
     this->browser_=new MainWindow(url_,title_);
     browser_->setWindowIcon(QIcon(":icon.png"));
 
