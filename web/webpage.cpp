@@ -34,19 +34,19 @@ QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
     UIC::PopupWindow *wnd=new  UIC::PopupWindow(BROWSER->getMainWindow());
     QMap<QString ,UIC::PopupWindow *> *children= BROWSER->getMainWindow()->getChildWindow();
     QString title=feature.title;
-    if(children->contains(title))
-    {
+//    if(children->contains(title))
+//    {
 
-        int i=1;
+//        int i=1;
 
-        while (children->contains(title+QString::number(i)))
-        {
-            i++;
+//        while (children->contains(title+QString::number(i)))
+//        {
+//            i++;
 
-        }
-        title+=QString::number(i);
+//        }
+//        title+=QString::number(i);
 
-    }
+//    }
     children->insert(title,wnd);
     wnd->setTitle(title);
 
