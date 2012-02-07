@@ -34,6 +34,11 @@ MainWindow::MainWindow(const QUrl& url,const QString &_title,QWidget *parent):QM
     setUnifiedTitleAndToolBarOnMac(true);
 
     childwnd_=new  QMap<QString,UIC::PopupWindow*>();
+
+    //child widget init:
+//    this->slidewidget_=new SlideWidget(this);
+//    slidewidget_->move(0,100);
+//    this->slidewidget_->show();
 }
 
 

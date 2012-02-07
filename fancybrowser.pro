@@ -8,7 +8,8 @@ HEADERS =   \
     web/webpage.h \
     web/webview.h \
     gui/splashscreen.h \
-    web/object/jsobjwindowx.h
+    web/object/jsobjwindowx.h \
+    gui/ui/slidewidget.h
 SOURCES =   main.cpp \
     browser.cpp \
     gui/popupwindow.cpp \
@@ -17,7 +18,8 @@ SOURCES =   main.cpp \
     web/webview.cpp \
     web/webpage.cpp \
     gui/splashscreen.cpp \
-    web/object/jsobjwindowx.cpp
+    web/object/jsobjwindowx.cpp \
+    gui/ui/slidewidget.cpp
 RESOURCES = \
     resource/icon.qrc
 TARGET =UICreator
@@ -38,3 +40,6 @@ OTHER_FILES += \
     icon.rc
 RC_FILE = \
       icon.rc
+
+FORMS += \
+    gui/ui/slidewidget.ui

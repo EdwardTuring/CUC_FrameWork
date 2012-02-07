@@ -8,7 +8,7 @@
 #include <QShortcut>
 #include "qt4.h"
 #include "web/webview.h"
-
+#include "gui/ui/slidewidget.h"
 using namespace Web;
 namespace UIC
 {
@@ -71,6 +71,12 @@ private:
      QShortcut *sht_normalscreen_;
 
      QMap<QString ,UIC::PopupWindow*> *childwnd_;
+
+     //child window:
+    SlideWidget *slidewidget_;
+
+
+
 
 };
 }//namespace UIC
