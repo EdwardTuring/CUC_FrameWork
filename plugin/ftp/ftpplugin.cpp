@@ -1,7 +1,7 @@
 #include "ftpplugin.h"
 FtpPlugin::FtpPlugin(QObject *parent)
 {
-
+    ftp=new QFtp(this);
 
 }
 void FtpPlugin::debug() const
@@ -20,6 +20,9 @@ QString FtpPlugin::pluginIcoUrl() const
 {
     return "ftp.png";
 }
-
+int FtpPlugin::connectToHost(const QString &host, QString port)
+{
+    ftp->connectToHost(host,atoi(port.ascii()));
+}
 
 Q_EXPORT_PLUGIN2(ftp, FtpPlugin)
