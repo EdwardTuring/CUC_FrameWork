@@ -1,11 +1,9 @@
 #include <QtCore>
-#include "zconf.h"
-#include "zlib.h"
+#include "quazip/quazipfile.h"
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QString aa("aa");
-    QString b("ss");
-    gzopen(aa.toStdString().c_str(),b.toStdString().c_str());
+    QuaZipFile zip();
+
     return a.exec();
 }
