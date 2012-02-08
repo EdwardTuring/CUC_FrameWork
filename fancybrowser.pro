@@ -44,3 +44,4 @@ RC_FILE = \
 
 FORMS += \
     gui/ui/slidewidget.ui
+

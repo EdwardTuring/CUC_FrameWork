@@ -1,6 +1,7 @@
 #include "webpage.h"
 #include "qt4.h"
 #include <QWebFrame>
+#include <QDir>
 #include "browser.h"
 #include "../gui/mainwindow.h"
 #include "../gui/popupwindow.h"
@@ -11,6 +12,7 @@ namespace Web
 WebPage::WebPage(QWidget *parent):QWebPage(parent)
 {
     this->windowx_=new JSOBJWindowx(this);
+    //plugins=new QVector<Plugin::CUCPluginInterface* >;
     CONNECT(this->mainFrame(),javaScriptWindowObjectCleared(),this,addJSOBJ());
 }
 
@@ -70,6 +72,21 @@ QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
 }
 void WebPage::addJSOBJ()
 {
+    //ÔØÈë²å¼þ{
+    QDir pluginsDir = QDir(qApp->applicationDirPath());
+    pluginsDir.cd("plugins/cuc_plugins");
+    foreach (QString fileName,pluginsDir.entryList(QDir::Files))
+    {
+        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
+        QObject *plugin = loader.instance();
+        qDebug()<<plugin;
+        fileName.truncate(fileName.lastIndexOf("."));
+        qDebug()<<fileName;
+        if (plugin)
+        {
+               this->mainFrame()->addToJavaScriptWindowObject(fileName,plugin);
+        }
+    }
     if(this->windowx_)
     {
         this->mainFrame()->addToJavaScriptWindowObject("windowx",this->windowx_);

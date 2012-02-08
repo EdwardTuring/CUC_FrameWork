@@ -1,8 +1,9 @@
 #ifndef WEBPAGE_H
 #define WEBPAGE_H
 #include <QWebPage>
+#include <QtCore>
 #include "object/jsobjwindowx.h"
-
+#include "../plugin/CUCplugininterface.h"
 namespace Web
 {
 class WebPage : public QWebPage
@@ -21,6 +22,7 @@ public slots:
 private:
 
     JSOBJWindowx *windowx_;
+    QVector<QObject *> *plugins;
 };
 }// namespace Web
 #endif // WEBPAGE_H
