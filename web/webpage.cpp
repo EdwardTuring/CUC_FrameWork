@@ -79,12 +79,12 @@ void WebPage::addJSOBJ()
     {
         QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = loader.instance();
-        qDebug()<<plugin;
         fileName.truncate(fileName.lastIndexOf("."));
-        qDebug()<<fileName;
+        qDebug()<<"loading plugin:"+fileName;
         if (plugin)
         {
                this->mainFrame()->addToJavaScriptWindowObject(fileName,plugin);
+               qDebug()<<(fileName+"loaded");
         }
     }
     if(this->windowx_)

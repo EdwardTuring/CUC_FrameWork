@@ -2,7 +2,8 @@
 #include <QSettings>
 #include <QFile>
 #include <QMap>
-
+#include "web/webview.h"
+#include "gui/ui/repodialog.h"
 namespace UIC {
 Browser::Browser(QObject *parent) :
     QObject(parent)
@@ -38,7 +39,7 @@ Browser::Browser(QObject *parent) :
     CONNECT(this->browser_->view()->page(),loadFinished(bool),this,startTimeCount());
     CONNECT(this->time_openwindow_,timeout(),this,finishLoad());
 
-    while(100==this->browser_->getProcess()){}
+
 
 
 }
@@ -118,6 +119,16 @@ void Browser::finishLoad()
         splash_=NULL;
     }
         this->show();
+    connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
 
+}
+
+void Browser::connectToPluginRepository()
+{
+    qDebug()<<"function connectToPluginRepository works";
+    RepoDialog repodialog;
+    repodialog.setRepoUrl("http://www.baidu.com");
+    repodialog.exec();
+    this->time_openwindow_->stop();
 }
 } //namespace UIC

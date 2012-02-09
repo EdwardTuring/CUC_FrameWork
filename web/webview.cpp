@@ -22,6 +22,8 @@ WebView::WebView(QWidget *parent) :
     QString location=QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
     diskCache->setCacheDirectory(location);
     page()->networkAccessManager()->setCache(diskCache);
+
+    setContextMenuPolicy (Qt::NoContextMenu);//фа╠нт╜спср╪Э╡к╣╔
 }
 }//namespace Web
 

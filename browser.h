@@ -22,6 +22,8 @@ public:
     void show(){this->browser_->show();}
     void setSplashScreen(UIC::SplashScreen *splash){splash_=splash;}
     UIC::SplashScreen *getSplashScreen(){return splash_;}
+
+    void connectToPluginRepository();
 protected slots:
     void finishLoad();
     void startTimeCount();
