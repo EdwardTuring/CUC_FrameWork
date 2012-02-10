@@ -127,7 +127,7 @@ void Browser::connectToPluginRepository()
 {
     qDebug()<<"function connectToPluginRepository works";
     RepoDialog repodialog;
-    repodialog.setRepoUrl("http://www.baidu.com");
+    repodialog.setRepoUrl("http://127.0.0.1/ui_client/repository");
     repodialog.exec();
     this->time_openwindow_->stop();
 }

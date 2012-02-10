@@ -23,7 +23,7 @@ WebView::WebView(QWidget *parent) :
     diskCache->setCacheDirectory(location);
     page()->networkAccessManager()->setCache(diskCache);
 
-    setContextMenuPolicy (Qt::NoContextMenu);//屏蔽原有右键菜单
+   // setContextMenuPolicy (Qt::NoContextMenu);//屏蔽原有右键菜单
 }
 }//namespace Web
 

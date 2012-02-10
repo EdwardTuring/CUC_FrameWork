@@ -24,7 +24,20 @@ void WebPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
 }
 bool WebPage::javaScriptConfirm( QWebFrame * frame, const QString & msg )
 {
-    return QMessageBox::Yes == QMessageBox::information(BROWSER->getMainWindow(), "操作确认",Qt::escape(msg), "确定","取消");
+    QMessageBox confirm_msg(BROWSER->getMainWindow());
+    confirm_msg.setWindowTitle("操作确认");
+    confirm_msg.setText(msg);
+   QAbstractButton *btn_yes=confirm_msg.addButton("确定",QMessageBox::ActionRole);
+    QAbstractButton *btn_no=confirm_msg.addButton("取消",QMessageBox::ActionRole);
+    confirm_msg.exec();
+    if(confirm_msg.clickedButton()==btn_yes)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 
 }
 

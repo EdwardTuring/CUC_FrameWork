@@ -7,7 +7,9 @@ RepoDialog::RepoDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     this->webview_=new Web::WebView(this);
+    ui->horizontalLayout->setMargin(0);
     ui->horizontalLayout->addWidget(webview_);
+    setFixedSize(400,550);
 }
 void RepoDialog::setRepoUrl(QString url)
 {
