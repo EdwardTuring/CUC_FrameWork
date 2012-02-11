@@ -1,6 +1,7 @@
 #include "jsobjwindowx.h"
 #include "browser.h"
 #include "gui/popupwindow.h"
+#include "gui/ui/aboutdialog.h"
 extern UIC::Browser *BROWSER;
 
 namespace Web{
@@ -49,4 +50,13 @@ void JSOBJWindowx::closeChildWindow(const QString title)
 
     }
 }
+void JSOBJWindowx::showAboutDialog(const QString &msg)
+{
+
+    qDebug()<<"showAboutDialog works";
+    AboutDialog about(qobject_cast<QWidget *>(parent()->parent()));
+    about.exec();
+
+}
 }//namespace Web
+

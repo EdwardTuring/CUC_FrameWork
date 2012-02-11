@@ -6,5 +6,7 @@
         <file>jquery.min.js</file>
         <file>qt_zh_CN.qm</file>
         <file>wait.gif</file>
+        <file>logo_webkit.png</file>
+        <file>logo_cuc.jpg</file>
     </qresource>
 </RCC>

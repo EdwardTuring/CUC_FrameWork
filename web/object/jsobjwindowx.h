@@ -19,6 +19,8 @@ public slots:
     void closeChildWindow(const QString title);
     QString getChildWindow();
 
+    void showAboutDialog(const QString &msg="这是关于...");
+
 };
 }//namespace Web
 #endif // JSOBJOS_H

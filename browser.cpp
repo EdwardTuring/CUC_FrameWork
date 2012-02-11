@@ -16,7 +16,7 @@ Browser::Browser(QObject *parent) :
     qApp->processEvents();
     splash_->show();
 
-    splash_->showMessage("正在为你载入UICreator v1.213...");
+    splash_->showMessage("正在为你载入UICreator v1.214...");
     this->browser_=new MainWindow(url_,title_);
     browser_->setWindowIcon(QIcon(":icon.png"));
 
@@ -119,7 +119,7 @@ void Browser::finishLoad()
         splash_=NULL;
     }
         this->show();
-    //connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
+    connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
 
 }
 

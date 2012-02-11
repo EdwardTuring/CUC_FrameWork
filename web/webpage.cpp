@@ -19,12 +19,12 @@ WebPage::WebPage(QWidget *parent):QWebPage(parent)
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
 {
 
-    QMessageBox::information(BROWSER->getMainWindow(), "提示", Qt::escape(msg), QMessageBox::Ok);
+    QMessageBox::information(qobject_cast<QWidget *>(this->parent()), "提示", Qt::escape(msg), QMessageBox::Ok);
 
 }
 bool WebPage::javaScriptConfirm( QWebFrame * frame, const QString & msg )
 {
-    QMessageBox confirm_msg(BROWSER->getMainWindow());
+    QMessageBox confirm_msg(qobject_cast<QWidget *>(this->parent()));
     confirm_msg.setWindowTitle("操作确认");
     confirm_msg.setText(msg);
    QAbstractButton *btn_yes=confirm_msg.addButton("确定",QMessageBox::ActionRole);
@@ -88,7 +88,10 @@ void WebPage::addJSOBJ()
     //载入插件{
     QDir pluginsDir = QDir(qApp->applicationDirPath());
     pluginsDir.cd("plugins/cuc_plugins");
-    foreach (QString fileName,pluginsDir.entryList(QDir::Files))
+    QStringList filters;
+      filters << "*.dll" ;
+       pluginsDir.setNameFilters(filters);
+    foreach (QString fileName,pluginsDir.entryList(filters))
     {
         QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = loader.instance();

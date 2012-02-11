@@ -10,7 +10,8 @@ HEADERS =   \
     gui/splashscreen.h \
     web/object/jsobjwindowx.h \
     gui/ui/slidewidget.h \
-    gui/ui/repodialog.h
+    gui/ui/repodialog.h \
+    gui/ui/aboutdialog.h
 SOURCES =   main.cpp \
     browser.cpp \
     gui/popupwindow.cpp \
@@ -21,7 +22,8 @@ SOURCES =   main.cpp \
     gui/splashscreen.cpp \
     web/object/jsobjwindowx.cpp \
     gui/ui/slidewidget.cpp \
-    gui/ui/repodialog.cpp
+    gui/ui/repodialog.cpp \
+    gui/ui/aboutdialog.cpp
 RESOURCES = \
     resource/icon.qrc
 TARGET =UICreator
@@ -46,5 +48,6 @@ RC_FILE = \
 
 FORMS += \
     gui/ui/slidewidget.ui \
-    gui/ui/repodialog.ui
+    gui/ui/repodialog.ui \
+    gui/ui/aboutdialog.ui
 
