@@ -10,13 +10,13 @@ Browser::Browser(QObject *parent) :
 {
     handleConfig();
     time_openwindow_ = new QTimer(this); //初始化定时器
-    QPixmap pixmap(":/init_pic.jpg");
+    QPixmap pixmap(":/init_ftp_client.jpg");
 
     splash_ = new SplashScreen(pixmap);
     qApp->processEvents();
     splash_->show();
 
-    splash_->showMessage("正在为你载入UICreator v1.214...");
+    splash_->showMessage("正在为你载入...");
     this->browser_=new MainWindow(url_,title_);
     browser_->setWindowIcon(QIcon(":icon.png"));
 
@@ -119,7 +119,7 @@ void Browser::finishLoad()
         splash_=NULL;
     }
         this->show();
-    connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
+    //connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
 
 }
 
