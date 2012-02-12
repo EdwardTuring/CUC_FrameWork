@@ -108,7 +108,7 @@ void MainWindow::showMaxSizeScreen()
 
 void MainWindow::toMaxSizeScreen()
 {
-    this->showMaximized();
+    this->setWindowState(Qt::WindowMaximized);
     emit MaxSizeChanged();
 }
 void MainWindow::setMaxSize()
