@@ -119,7 +119,7 @@ void Browser::finishLoad()
         splash_=NULL;
     }
         this->show();
-    connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
+   // connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
 
 }
 
