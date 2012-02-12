@@ -26,7 +26,7 @@ SOURCES =   main.cpp \
     gui/ui/aboutdialog.cpp
 RESOURCES = \
     resource/icon.qrc
-TARGET =UICreator
+TARGET =Client
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
 sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro
