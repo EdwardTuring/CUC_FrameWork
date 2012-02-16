@@ -1,5 +1,6 @@
 #include "ftpplugin.h"
 #include <QMessageBox>
+
 #include <string.h>
 FtpPlugin::FtpPlugin(QObject *parent)
 {
@@ -8,12 +9,20 @@ FtpPlugin::FtpPlugin(QObject *parent)
 
     connect(ftp, SIGNAL(commandFinished(int,bool)),
                 this, SLOT(ftpCommandFinished(int,bool)));
+    connect(ftp, SIGNAL(listInfo(QUrlInfo)),
+                this, SLOT(getListInfo(QUrlInfo)));
     connect(ftp, SIGNAL(dataTransferProgress(qint64,qint64)),
         this, SLOT(updateDataTransferProgress(qint64,qint64)));
 }
+void FtpPlugin::getListInfo(const QUrlInfo &i)
+{
+    qDebug()<<"getListInfo works";
+    emit listInfo(QString::fromUtf8(i.name().toLatin1()),i.isFile());
+}
+
 void FtpPlugin::updateDataTransferProgress(qint64 readBytes, qint64 totalBytes)
 {
-
+    emit dataTransferProgress(QString::number(readBytes),QString::number(totalBytes));
 }
 
 void FtpPlugin::debug() const
@@ -71,6 +80,7 @@ int FtpPlugin::get(const QString &srcfileName,const QString &fileName)
 int FtpPlugin::put(const QString &choosed_files_dir_)
 {
     QFile *remoteFileName=new QFile(choosed_files_dir_);
+    uploadfilename_=remoteFileName->fileName();
     qDebug()<<"正在打开需要上传的文件...";
     qDebug()<< remoteFileName->open(QIODevice::ReadOnly);
     QString fileName = QFileInfo(choosed_files_dir_).fileName();
@@ -86,7 +96,8 @@ int FtpPlugin::put(const QString &choosed_files_dir_)
 int FtpPlugin::cd(const QString &dir)
 {
     qDebug()<<"cd:正在返回上一级目录...";
-    return ftp->cd(dir);
+
+    return ftp->cd( QString::fromLatin1(dir.toUtf8()));
 }
 int FtpPlugin::close()
 {
@@ -117,6 +128,9 @@ void FtpPlugin::ftpCommandFinished(int, bool error)
     {
         if (error) {
            qDebug()<<("无法下载 "+(file_->fileName()));
+           QMessageBox::information(NULL, tr("FTP 模块"),
+                                    "无法下载 "+(file_->fileName()) );
+             ftp->close();
             file_->close();
             file_->remove();
         } else {
@@ -140,11 +154,14 @@ void FtpPlugin::ftpCommandFinished(int, bool error)
 
         if (error) {
            qDebug()<<("上传出错");
+           QMessageBox::information(NULL, tr("FTP 模块"),
+                                    "无法上传 "+uploadfilename_ );
+           ftp->close();
 
         } else {
 
            emit putfinished();
-           ftp->list();
+
         }
 
 
@@ -156,4 +173,10 @@ void FtpPlugin::ftpCommandFinished(int, bool error)
 
     }
 }
+int FtpPlugin::mkdir(const QString &foldername)
+{
+    qDebug()<<"mkdir:"+foldername;
+    return ftp->mkdir(foldername);
+}
+
 Q_EXPORT_PLUGIN2(ftp, FtpPlugin)

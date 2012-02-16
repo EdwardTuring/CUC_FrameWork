@@ -23,26 +23,32 @@ public slots:
     virtual QString pluginIcoUrl() const;
 
      void ftpCommandFinished(int, bool error);
-    void updateDataTransferProgress(qint64 readBytes,qint64 totalBytes);
+
 
      int	cd ( const QString & dir );
 
      int	close ();
      int	connectToHost( const QString & host, QString  port = "21" );
-
+     int mkdir(const QString & foldername);
 
      int	get ( const QString & srcfileName, const QString &fileName);
      int    put(const QString & choosed_files_dir_);
      int	list ( const QString & dir = QString() );
      int	login ( const QString & user = QString(), const QString & password = QString() );
-
+protected slots:
+     void updateDataTransferProgress(qint64 readBytes,qint64 totalBytes);
+     void getListInfo(const QUrlInfo & i);
 signals:
      void getFinished();
      void putfinished();
+     void mkdirFinished();
+     void listInfo( QString,bool);
+     void dataTransferProgress(QString,QString);
 
 private:
      QFtp *ftp;
      QFile *file_;
+     QString uploadfilename_;
 };
 
 
