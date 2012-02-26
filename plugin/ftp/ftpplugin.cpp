@@ -17,6 +17,7 @@ FtpPlugin::FtpPlugin(QObject *parent)
 void FtpPlugin::getListInfo(const QUrlInfo &i)
 {
     qDebug()<<"getListInfo works";
+
     emit listInfo(QString::fromUtf8(i.name().toLatin1()),i.isFile());
 }
 
@@ -165,8 +166,19 @@ void FtpPlugin::ftpCommandFinished(int, bool error)
         }
 
 
+    }
+    else if(ftp->currentCommand()==QFtp::Mkdir){
+        if(error){
+            qDebug()<<("Mkdir:error");
+             emit mkdirfinished(false);
+            ftp->close();
 
+        }
+        else {
 
+            emit mkdirfinished(true);
+
+          }
     }
     else if(ftp->currentCommand()==QFtp::None)
     {

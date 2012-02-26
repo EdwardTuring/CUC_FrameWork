@@ -41,7 +41,7 @@ protected slots:
 signals:
      void getFinished();
      void putfinished();
-     void mkdirFinished();
+     void mkdirfinished(bool);
      void listInfo( QString,bool);
      void dataTransferProgress(QString,QString);
 

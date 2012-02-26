@@ -17,13 +17,16 @@ WebView::WebView(QWidget *parent) :
     this->page()->settings()->setAttribute(QWebSettings::OfflineWebApplicationCacheEnabled,true);
     this->page()->settings()->setAttribute(QWebSettings::LocalStorageEnabled,true);
 
+
+    setContextMenuPolicy (Qt::NoContextMenu);
+
     //使用缓存:
     QNetworkDiskCache *diskCache=new QNetworkDiskCache(this);
     QString location=QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
     diskCache->setCacheDirectory(location);
     page()->networkAccessManager()->setCache(diskCache);
 
-   // setContextMenuPolicy (Qt::NoContextMenu);//屏蔽原有右键菜单
+
 }
 }//namespace Web
 

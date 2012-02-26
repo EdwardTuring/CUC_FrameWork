@@ -8,6 +8,7 @@ MainWindow::MainWindow(const QUrl& url,const QString &_title,QWidget *parent):QM
 {
     progress_ = 0;
     title_=_title;
+
  QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     view_ = new WebView(this);
@@ -122,10 +123,12 @@ void MainWindow::setActionsAndShortCuts()
    sht_fullscreen_= new QShortcut(QKeySequence(tr("ESC")), this);
      sht_reload_= new QShortcut(QKeySequence(tr("F5")), this);
      sht_normalscreen_=new QShortcut(QKeySequence(tr("F11")),this);
+
     connect( sht_fullscreen_, SIGNAL( activated() ), this, SLOT( toNormalScreen() ) );
     CONNECT(sht_reload_,activated(),view_,reload());
      CONNECT(sht_normalscreen_,activated(),this,toFullOrNormalScreen());
-    view_->setContextMenuPolicy(Qt::NoContextMenu);
+
+  //  view_->setContextMenuPolicy(Qt::NoContextMenu);
 }
 
 

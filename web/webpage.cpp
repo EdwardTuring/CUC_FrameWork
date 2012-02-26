@@ -12,8 +12,11 @@ namespace Web
 WebPage::WebPage(QWidget *parent):QWebPage(parent)
 {
     this->windowx_=new JSOBJWindowx(this);
+
     //plugins=new QVector<Plugin::CUCPluginInterface* >;
     CONNECT(this->mainFrame(),javaScriptWindowObjectCleared(),this,addJSOBJ());
+
+
 }
 
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &msg)

@@ -10,15 +10,17 @@ Browser::Browser(QObject *parent) :
 {
     handleConfig();
     time_openwindow_ = new QTimer(this); //初始化定时器
-    QPixmap pixmap(":/init_ftp_client.jpg");
-
+    QPixmap pixmap;
+    pixmap.load(":startup.png",0,Qt::AvoidDither|Qt::ThresholdDither|Qt::ThresholdAlphaDither);
     splash_ = new SplashScreen(pixmap);
+      splash_->setMask(pixmap.mask());
+      splash_-> setWindowOpacity(0.96);
     qApp->processEvents();
     splash_->show();
 
-    splash_->showMessage("正在为你载入...");
+    splash_->showMessage("     正在为你载入...");
     this->browser_=new MainWindow(url_,title_);
-    browser_->setWindowIcon(QIcon(":icon.png"));
+    browser_->setWindowIcon(QIcon(":ftpclient.png"));
 
     if(this->ismaxsize_)
     {

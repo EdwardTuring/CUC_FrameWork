@@ -2,6 +2,7 @@
 #define WEBPAGE_H
 #include <QWebPage>
 #include <QtCore>
+#include <QWebInspector>
 #include "object/jsobjwindowx.h"
 #include "../plugin/CUCplugininterface.h"
 namespace Web
@@ -22,6 +23,7 @@ public slots:
 private:
 
     JSOBJWindowx *windowx_;
+
     QVector<QObject *> *plugins;
 };
 }// namespace Web

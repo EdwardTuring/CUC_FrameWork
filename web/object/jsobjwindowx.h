@@ -20,6 +20,8 @@ public slots:
     QString getChildWindow();
 
     void showAboutDialog(const QString &msg="这是关于...");
+    void debug(const QString &msg);
+    void log(const QString &msg);
 
 };
 }//namespace Web

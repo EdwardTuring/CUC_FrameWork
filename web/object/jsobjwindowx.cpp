@@ -1,5 +1,6 @@
 #include "jsobjwindowx.h"
 #include "browser.h"
+#include <QFile>
 #include "gui/popupwindow.h"
 #include "gui/ui/aboutdialog.h"
 extern UIC::Browser *BROWSER;
@@ -57,6 +58,29 @@ void JSOBJWindowx::showAboutDialog(const QString &msg)
     AboutDialog about(qobject_cast<QWidget *>(parent()->parent()));
     about.exec();
 
+}
+void JSOBJWindowx::debug(const QString &msg)
+{
+    qDebug()<<"---------------WINDOWX DEBUG-----------------------\n";
+    qDebug()<<msg+"\n";
+    qDebug()<<"---------------"+QTime::currentTime().toString()+"--------------------------\n";
+}
+void JSOBJWindowx::log(const QString &msg)
+{
+
+    QDir logdir = QDir(qApp->applicationDirPath());
+     logdir.mkdir("log");
+     logdir.cd("log");
+     QFile log_file(logdir.absoluteFilePath("log.txt"));
+     if(log_file.open(QFile::Append| QIODevice::Text)){
+           QTextStream out(&log_file);
+       out<<"---------------WINDOWX LOG-----------------------\n";
+       out<<msg+"\n";
+      out<<"---------------"+QTime::currentTime().toString()+"--------------------------\n";
+       log_file.close();
+     }
+     else
+           return;
 }
 }//namespace Web
 

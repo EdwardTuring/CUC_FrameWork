@@ -41,10 +41,9 @@ symbian {
 maemo5: include($$PWD/../../maemo5pkgrules.pri)
 
 OTHER_FILES += \
-    icon.rc \
     README
-RC_FILE = \
-      icon.rc
+RC_FILE =
+
 
 FORMS += \
     gui/ui/slidewidget.ui \

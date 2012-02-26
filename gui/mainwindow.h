@@ -5,6 +5,7 @@
 #include <QtGui>
  #include <QKeyEvent>
 #include <QAction>
+
 #include <QShortcut>
 #include "qt4.h"
 #include "web/webview.h"
@@ -69,7 +70,7 @@ private:
      QShortcut  *sht_fullscreen_;
      QShortcut  *sht_reload_;
      QShortcut *sht_normalscreen_;
-
+      QShortcut *sh_inspector_;
      QMap<QString ,UIC::PopupWindow*> *childwnd_;
 
      //child window:
