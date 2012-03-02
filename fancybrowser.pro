@@ -42,9 +42,10 @@ maemo5: include($$PWD/../../maemo5pkgrules.pri)
 
 OTHER_FILES += \
     README
-RC_FILE =
 
 
+RC_FILE = \
+  icon.rc
 FORMS += \
     gui/ui/slidewidget.ui \
     gui/ui/repodialog.ui \
