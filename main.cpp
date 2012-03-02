@@ -26,6 +26,10 @@ int main(int argc, char * argv[])
 {
     QApplication app(argc, argv);
     setCodec();
+    app.setOrganizationName("CUC");
+        app.setApplicationName("UICreator");
+        app.setApplicationVersion("1.3");
+
     QTranslator translator;
      translator.load(":/qt_zh_CN.qm");
      app.installTranslator(&translator);

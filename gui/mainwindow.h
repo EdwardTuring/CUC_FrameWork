@@ -24,7 +24,7 @@ public:
     void showNormalSCreen(){this->toNormalScreen();}
     void showFullScreenX(){this->toFullScreen();}
     QRect getAvailableGeometry(){return this->availableGeometry;}
-    QWebView *view(){return view_;}
+    WebView *view(){return view_;}
     void Move(float x,float y);
     void ReSize(float width,float height);
     void setTitle(const QString title);
@@ -52,7 +52,7 @@ protected slots:
     void setProgress(int p);
     void setMaxSize();
     void toFullOrNormalScreen();
-
+    void showInspector();
 
 protected:
     WebView *view_;
@@ -69,7 +69,8 @@ private:
      QShortcut  *sht_fullscreen_;
      QShortcut  *sht_reload_;
      QShortcut *sht_normalscreen_;
-
+      QShortcut *sht_inspector_;
+        QMainWindow *wnd_inspector_;
      QMap<QString ,UIC::PopupWindow*> *childwnd_;
 
      //child window:

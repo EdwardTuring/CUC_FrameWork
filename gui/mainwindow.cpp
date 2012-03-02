@@ -8,6 +8,7 @@ MainWindow::MainWindow(const QUrl& url,const QString &_title,QWidget *parent):QM
 {
     progress_ = 0;
     title_=_title;
+    wnd_inspector_=NULL;
  QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     view_ = new WebView(this);
@@ -122,9 +123,11 @@ void MainWindow::setActionsAndShortCuts()
    sht_fullscreen_= new QShortcut(QKeySequence(tr("ESC")), this);
      sht_reload_= new QShortcut(QKeySequence(tr("F5")), this);
      sht_normalscreen_=new QShortcut(QKeySequence(tr("F11")),this);
+     sht_inspector_=new QShortcut(QKeySequence(tr("Ctrl+Shift+i")),this);
     connect( sht_fullscreen_, SIGNAL( activated() ), this, SLOT( toNormalScreen() ) );
     CONNECT(sht_reload_,activated(),view_,reload());
      CONNECT(sht_normalscreen_,activated(),this,toFullOrNormalScreen());
+        CONNECT(sht_inspector_,activated(),this,showInspector());
     view_->setContextMenuPolicy(Qt::NoContextMenu);
 }
 
@@ -170,5 +173,16 @@ void MainWindow::setTitle(const QString title)
 {
     this->title_=title;
 
+}
+
+void MainWindow::showInspector()
+{
+    if(wnd_inspector_==NULL)
+    {
+        wnd_inspector_=new QMainWindow();
+        wnd_inspector_->setCentralWidget(this->view()->getInspector());
+    }
+    wnd_inspector_->resize(800,600);
+    wnd_inspector_->show();
 }
 }//namespace UIC

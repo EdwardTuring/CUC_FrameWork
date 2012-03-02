@@ -36,7 +36,7 @@ QString JSOBJWindowx::getChildWindow()
     str+=list.value(i);
     return str;
 }
-void JSOBJWindowx::quit()
+void JSOBJWindowx::close()
 {
     qobject_cast<QWidget*>(qobject_cast<QWebPage*>(parent())->view()->parent())->close();
 }

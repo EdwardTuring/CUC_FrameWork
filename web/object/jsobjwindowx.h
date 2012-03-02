@@ -15,7 +15,7 @@ public slots:
     void showMaxSize();
     void showNormal();
     void showFullScreen();
-    void quit();
+    void close();
     void closeChildWindow(const QString title);
     QString getChildWindow();
 
