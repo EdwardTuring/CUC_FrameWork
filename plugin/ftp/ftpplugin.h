@@ -43,6 +43,7 @@ signals:
 private:
      QFtp *ftp;
      QFile *file_;
+     QFile *up_load_file;
 };
 
 

@@ -85,7 +85,7 @@ int FtpPlugin::put(const QString &choosed_files_dir_)
 }
 int FtpPlugin::cd(const QString &dir)
 {
-    qDebug()<<"cd:正在返回上一级目录...";
+    qDebug()<<"cd:正在改变级目录到 "+dir+" ...";
     return ftp->cd(dir);
 }
 int FtpPlugin::close()
