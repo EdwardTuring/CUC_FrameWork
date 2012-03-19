@@ -33,5 +33,12 @@ bool FilePlugin::exists(const QString &filename)
 {
     return QFile::exists(filename);
 }
+QString FilePlugin::saveAs(const QString &filename)
+{
+    QString path = QFileDialog::getSaveFileName(NULL, tr("Áí´æÎª"),
+                                                    QDir::homePath()+"/"+filename,
+                               tr("Multimedia files(*)"));
+    return path;
+}
 
 Q_EXPORT_PLUGIN2(file, FilePlugin)

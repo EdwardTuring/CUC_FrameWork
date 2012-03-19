@@ -11,7 +11,7 @@ Browser::Browser(QObject *parent) :
     handleConfig();
     time_openwindow_ = new QTimer(this); //初始化定时器
     QPixmap pixmap;
-    pixmap.load(":startup.png",0,Qt::AvoidDither|Qt::ThresholdDither|Qt::ThresholdAlphaDither);
+    pixmap.load(":loading.png",0,Qt::AvoidDither|Qt::ThresholdDither|Qt::ThresholdAlphaDither);
     splash_ = new SplashScreen(pixmap);
       splash_->setMask(pixmap.mask());
       splash_-> setWindowOpacity(0.96);

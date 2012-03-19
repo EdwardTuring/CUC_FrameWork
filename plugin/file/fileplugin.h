@@ -23,6 +23,7 @@ public slots:
     virtual QString pluginIcoUrl() const;
 
      QString chooseFile();
+     QString saveAs(const QString &filename);
      bool exists(const QString &filename);
 
 signals:
