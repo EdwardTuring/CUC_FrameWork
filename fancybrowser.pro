@@ -45,7 +45,7 @@ OTHER_FILES += \
     README
 RC_FILE = \
       icon.rc
-
+CONFIG+=console
 FORMS += \
     gui/ui/slidewidget.ui \
     gui/ui/repodialog.ui \
