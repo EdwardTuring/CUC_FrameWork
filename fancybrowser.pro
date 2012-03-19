@@ -26,7 +26,7 @@ SOURCES =   main.cpp \
     gui/ui/aboutdialog.cpp
 RESOURCES = \
     resource/icon.qrc
-TARGET =UICreator
+TARGET =UICreator_Dev
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
 sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro
@@ -45,7 +45,7 @@ OTHER_FILES += \
     README
 RC_FILE = \
       icon.rc
-
+CONFIG+=console
 FORMS += \
     gui/ui/slidewidget.ui \
     gui/ui/repodialog.ui \
