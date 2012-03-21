@@ -1,26 +1,30 @@
 #include "browser.h"
 #include <QSettings>
-#include <QFile>
-#include <QMap>
+#include <iostream>
 #include "web/webview.h"
 #include "gui/ui/repodialog.h"
+UIC::Browser *BROWSER=NULL;
 namespace UIC {
 Browser::Browser(QObject *parent) :
     QObject(parent)
+
 {
+
+    config_parser_=new CUCCore::ConfigParser(this);//初始化配置文件解析对象
+ CONNECT(config_parser_,fatalError(CUCCore::ConfigParser::parserError),this,fatalErroroccurred(CUCCore::ConfigParser::parserError));
     handleConfig();
     time_openwindow_ = new QTimer(this); //初始化定时器
     QPixmap pixmap(":/init_pic.jpg");
-
+    BROWSER=this;
     splash_ = new SplashScreen(pixmap);
     qApp->processEvents();
     splash_->show();
 
-<<<<<<< HEAD
-    splash_->showMessage("正在为你载入UICreator...");
-=======
 
->>>>>>> develop
+    splash_->showMessage("正在为你载入UICreator...");
+
+
+
     this->browser_=new MainWindow(url_,title_);
     browser_->setWindowIcon(QIcon(":icon.png"));
 
@@ -39,33 +43,44 @@ Browser::Browser(QObject *parent) :
             browser_->move((d.width()-width_)/2,(d.height()-height_)/2);
     }
 
+      handleConnectEvents();//注意：必须在所连接的对象构造完成之后调用！所以一般放在构造函数的最后
 
-    CONNECT(this->browser_->view()->page(),loadFinished(bool),this,startTimeCount());
-    CONNECT(this->time_openwindow_,timeout(),this,finishLoad());
 
 
 
 
 }
+void Browser::fatalErroroccurred(CUCCore::ConfigParser::parserError error_code)
+{
+#ifdef CUC_DEBUG
+    qDebug()<<"Browser::fatalErroroccurred():called";
+#endif
+    std::cerr<<"Browser::fatalErroroccurred()：致命错误：CUCCore::ConfigParser::parserError("<<error_code<<")"<<std::endl;
+
+}
+
+void Browser::handleConnectEvents()
+{
+#ifdef CUC_DEBUG
+    qDebug()<<"Browser::handleConnectEvents():called";
+#endif
+
+    CONNECT(this->browser_->view()->page(),loadFinished(bool),this,startTimeCount());
+    CONNECT(this->time_openwindow_,timeout(),this,finishLoad());
+}
+
 void Browser::handleConfig()
 {
-    bool config_exist_=QFile::exists("config.ini");
 
-    if(config_exist_)
+
+    if(config_parser_->parse())
     {
-         QSettings config("config.ini",QSettings::IniFormat);
-          config.setIniCodec(QTextCodec::codecForName("System"));
-
-        //读取配置文件的内容：
-        readConfig(config);
+         //读取配置文件的内容：
+        readConfig();
     }
     else
     {
-         QSettings config("config.ini",QSettings::IniFormat);
-          config.setIniCodec(QTextCodec::codecForName("System"));
-         //写入默认的配置：
-         writeDefualtConfig(config);
-         readConfig(config);
+         //TODO:连接bcont服务器以获取目标服务器的ip地址
     }
 }
 
@@ -74,22 +89,15 @@ Browser::~Browser()
 
 }
 
-void Browser::readConfig(const QSettings &config)
+void Browser::readConfig()
 {
 
 
-  url_=config.value("CUC_FrameWork/url").toString();
-   title_=config.value("CUC_FrameWork/title").toString();
-   this->width_=config.value("CUC_FrameWork/width").toInt();
-    this->height_=config.value("CUC_FrameWork/height").toInt();
-   if(config.value("CUC_FrameWork/maxsize").toInt()==1)
-   {
-       this->ismaxsize_=true;
-   }
-   else
-   {
-        this->ismaxsize_=false;
-   }
+  url_=config_parser_->getPlatformSetting()->getHostUrl();
+   title_=config_parser_->getPlatformSetting()->getWindowTitle();
+   width_=config_parser_->getPlatformSetting()->getWindowWidth();
+    height_=config_parser_->getPlatformSetting()->getWindowHeight();
+   ismaxsize_=config_parser_->getPlatformSetting()->getWindowISMaxsize();
 }
 
 void Browser::writeDefualtConfig(QSettings &config)
@@ -123,11 +131,9 @@ void Browser::finishLoad()
         splash_=NULL;
     }
         this->show();
-<<<<<<< HEAD
+
    // connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
-=======
-  //  connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
->>>>>>> develop
+
 
 }
 
@@ -138,5 +144,14 @@ void Browser::connectToPluginRepository()
     repodialog.setRepoUrl("http://127.0.0.1/ui_client/repository");
     repodialog.exec();
     this->time_openwindow_->stop();
+}
+void Browser::closeChildWindow(QWidget *child_wnd)
+{
+    if( child_wnd->close())
+     qDebug()<<"closed \n";
+    else
+    {
+        qDebug()<<"error when closed \n";
+    }
 }
 } //namespace UIC

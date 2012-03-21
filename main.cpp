@@ -5,8 +5,9 @@
 #include "browser.h"
 #include "gui/splashscreen.h"
 #include <QSettings>
+#include "core/configparser.h"
 using namespace UIC;
-Browser *BROWSER=NULL;
+
 
 
 //设置编码格式以显示中文
@@ -39,7 +40,8 @@ int main(int argc, char * argv[])
 
    Browser b;
 
-   BROWSER=&b;
+  //  CUCCore::ConfigParser par;
+
 
     return app.exec();
 }

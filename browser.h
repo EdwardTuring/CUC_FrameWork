@@ -4,8 +4,8 @@
 #include "qt4.h"
 #include "gui/mainwindow.h"
 #include "gui/splashscreen.h"
+#include "core/configparser.h"
 namespace UIC {
-
 
 class Browser : public QObject
 {
@@ -24,15 +24,18 @@ public:
     UIC::SplashScreen *getSplashScreen(){return splash_;}
 
     void connectToPluginRepository();
+public slots:
+    void closeChildWindow(QWidget *);
 protected slots:
     void finishLoad();
     void startTimeCount();
+    void fatalErroroccurred(CUCCore::ConfigParser::parserError error_code);
 private:
 
     void handleConfig();
-    void readConfig(const QSettings &config);
+    void readConfig();
     void writeDefualtConfig(QSettings &config);
-
+    void handleConnectEvents();
 private:
 
 
@@ -45,9 +48,11 @@ private:
     bool ismaxsize_;//是否最大化显示；
 
      MainWindow *browser_;
-     UIC::SplashScreen *splash_; //程序的载入页面
+    SplashScreen *splash_; //程序的载入页面
 
      QTimer *time_openwindow_;//打开窗口的定时器
+
+     CUCCore::ConfigParser *config_parser_;
 };
 } //namespace UIC
 #endif // BROWESER_H

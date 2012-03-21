@@ -13,7 +13,7 @@ MainWindow::MainWindow(const QUrl& url,const QString &_title,QWidget *parent):QM
 
     view_ = new WebView(this);
     view_->load(url);
-
+    popwindows_=new QVector<UIC::PopupWindow *>();
 
     setActionsAndShortCuts();
     connect(view_, SIGNAL(titleChanged(QString)), SLOT(adjustTitle()));
@@ -34,7 +34,7 @@ MainWindow::MainWindow(const QUrl& url,const QString &_title,QWidget *parent):QM
     setCentralWidget(view_);
     setUnifiedTitleAndToolBarOnMac(true);
 
-    childwnd_=new  QMap<QString,UIC::PopupWindow*>();
+   // childwnd_=new  QMap<QString,UIC::PopupWindow*>();
 
     //child widget init:
 //    this->slidewidget_=new SlideWidget(this);

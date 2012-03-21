@@ -11,7 +11,9 @@ HEADERS =   \
     web/object/jsobjwindowx.h \
     gui/ui/slidewidget.h \
     gui/ui/repodialog.h \
-    gui/ui/aboutdialog.h
+    gui/ui/aboutdialog.h \
+    core/configparser.h \
+    core/coreerror.h
 SOURCES =   main.cpp \
     browser.cpp \
     gui/popupwindow.cpp \
@@ -23,7 +25,8 @@ SOURCES =   main.cpp \
     web/object/jsobjwindowx.cpp \
     gui/ui/slidewidget.cpp \
     gui/ui/repodialog.cpp \
-    gui/ui/aboutdialog.cpp
+    gui/ui/aboutdialog.cpp \
+    core/configparser.cpp
 RESOURCES = \
     resource/icon.qrc
 TARGET =UICreator_Dev
@@ -51,3 +54,4 @@ FORMS += \
     gui/ui/repodialog.ui \
     gui/ui/aboutdialog.ui
 
+DEFINES+=CUC_DEBUG CUC_TEST

@@ -12,6 +12,8 @@ class WebPage : public QWebPage
 public:
     explicit WebPage(QWidget *parent = 0);
 
+     explicit WebPage(QWidget *parent ,QWidget *mainwindow);
+
 protected:
     void javaScriptAlert ( QWebFrame * frame, const QString & msg );
     bool javaScriptConfirm( QWebFrame * frame, const QString & msg );

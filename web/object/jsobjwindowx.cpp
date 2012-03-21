@@ -5,9 +5,11 @@
 extern UIC::Browser *BROWSER;
 
 namespace Web{
-JSOBJWindowx::JSOBJWindowx(QObject *parent) :
+JSOBJWindowx::JSOBJWindowx(QWidget *parent) :
     QObject(parent)
 {
+    this->parent_=parent;
+    qDebug()<<"windowx \n";
 }
 
 void JSOBJWindowx::showFullScreen()
@@ -38,17 +40,15 @@ QString JSOBJWindowx::getChildWindow()
 }
 void JSOBJWindowx::close()
 {
-    qobject_cast<QWidget*>(qobject_cast<QWebPage*>(parent())->view()->parent())->close();
+    qobject_cast<UIC::PopupWindow *>(parent_)->debug();
+    emit closeMe(parent_);
+   // BROWSER->getMainWindow()->close();
+
 }
 
 void JSOBJWindowx::closeChildWindow(const QString title)
 {
-    QMap<QString ,UIC::PopupWindow*> *children=BROWSER->getMainWindow()->getChildWindow();
-    if(children->contains(title))
-    {
-        children->value(title)->close();
 
-    }
 }
 void JSOBJWindowx::showAboutDialog(const QString &msg)
 {

@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <QtCore>
 /*
-这个头文件定义了基本的宏定义
+这个头文件定义了基本的宏
 
 */
 #define CONNECT(a,b,c,d) connect(a,SIGNAL(b),c,SLOT(d))

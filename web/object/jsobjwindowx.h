@@ -7,10 +7,10 @@ class JSOBJWindowx : public QObject
 {
     Q_OBJECT
 public:
-    explicit JSOBJWindowx(QObject *parent = 0);
+    explicit JSOBJWindowx(QWidget *parent = 0);
 
 signals:
-
+    void closeMe(QWidget*);
 public slots:
     void showMaxSize();
     void showNormal();
@@ -20,7 +20,8 @@ public slots:
     QString getChildWindow();
 
     void showAboutDialog(const QString &msg="这是关于...");
-
+private:
+    QWidget *parent_;
 };
 }//namespace Web
 #endif // JSOBJOS_H

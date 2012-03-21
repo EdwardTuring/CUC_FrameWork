@@ -30,7 +30,8 @@ public:
     void setTitle(const QString title);
     QMap<QString ,UIC::PopupWindow*> *getChildWindow(){return childwnd_;}
     int getProcess(){return this->progress_;}//获取当前的载入进度
-
+    void debug(){qDebug()<<"works \n";}
+    QVector<UIC::PopupWindow *> *getPopWindows(){return this->popwindows_;}
 public slots:
 
  signals:
@@ -72,7 +73,7 @@ private:
       QShortcut *sht_inspector_;
         QMainWindow *wnd_inspector_;
      QMap<QString ,UIC::PopupWindow*> *childwnd_;
-
+    QVector<UIC::PopupWindow*> *popwindows_;
      //child window:
     SlideWidget *slidewidget_;
 

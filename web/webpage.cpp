@@ -9,13 +9,18 @@
 extern UIC::Browser *BROWSER;
 namespace Web
 {
-WebPage::WebPage(QWidget *parent):QWebPage(parent)
+WebPage::WebPage(QWidget *parent, QWidget *mainwindow):QWebPage(parent)
 {
-    this->windowx_=new JSOBJWindowx(this);
+    this->windowx_=new JSOBJWindowx(mainwindow);
+    //下面连结事件：
+    CONNECT(windowx_,closeMe(QWidget *),BROWSER,closeChildWindow(QWidget *));
     //plugins=new QVector<Plugin::CUCPluginInterface* >;
     CONNECT(this->mainFrame(),javaScriptWindowObjectCleared(),this,addJSOBJ());
 }
-
+WebPage::WebPage(QWidget *parent):QWebPage(parent)
+{
+    //留补
+}
 void WebPage::javaScriptAlert(QWebFrame *frame, const QString &msg)
 {
 
@@ -46,8 +51,12 @@ QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
 {
 
     QUrl url("");
-    UIC::PopupWindow *wnd=new  UIC::PopupWindow(BROWSER->getMainWindow());
-    QMap<QString ,UIC::PopupWindow *> *children= BROWSER->getMainWindow()->getChildWindow();
+    UIC::MainWindow *mainwindow=BROWSER->getMainWindow();
+    UIC::PopupWindow *wnd=new  UIC::PopupWindow;
+
+    QVector<UIC::PopupWindow *> *popwnds=mainwindow->getPopWindows();
+    popwnds->push_back(wnd);
+   // QMap<QString ,UIC::PopupWindow *> *children= BROWSER->getMainWindow()->getChildWindow();
     QString title=feature.title;
 //    if(children->contains(title))
 //    {
@@ -62,7 +71,7 @@ QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
 //        title+=QString::number(i);
 
 //    }
-    children->insert(title,wnd);
+  //  children->insert(title,wnd);
     wnd->setTitle(title);
 
     QDesktopWidget* desktopWidget = QApplication::desktop();
