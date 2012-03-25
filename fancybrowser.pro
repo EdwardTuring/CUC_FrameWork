@@ -1,4 +1,4 @@
-QT      +=  webkit network
+QT      +=  webkit network xml
 HEADERS =   \
     qt4.h \
     browser.h \
@@ -13,7 +13,12 @@ HEADERS =   \
     gui/ui/repodialog.h \
     gui/ui/aboutdialog.h \
     core/configparser.h \
-    core/coreerror.h
+    core/coreerror.h \
+    gui/ui/guidedialog.h \
+    tool.h \
+    core/networkmanager.h \
+    test/tst_networkmanager.h \
+    test/test.h
 SOURCES =   main.cpp \
     browser.cpp \
     gui/popupwindow.cpp \
@@ -26,7 +31,12 @@ SOURCES =   main.cpp \
     gui/ui/slidewidget.cpp \
     gui/ui/repodialog.cpp \
     gui/ui/aboutdialog.cpp \
-    core/configparser.cpp
+    core/configparser.cpp \
+    gui/ui/guidedialog.cpp \
+    core/networkmanager.cpp \
+    test/tst_networkmanager.cpp \
+    test/test.cpp \
+    tool.cpp
 RESOURCES = \
     resource/icon.qrc
 TARGET =UICreator_Dev
@@ -52,6 +62,7 @@ CONFIG+=console
 FORMS += \
     gui/ui/slidewidget.ui \
     gui/ui/repodialog.ui \
-    gui/ui/aboutdialog.ui
+    gui/ui/aboutdialog.ui \
+    gui/ui/guidedialog.ui
 
 DEFINES+=CUC_DEBUG CUC_TEST

@@ -6,6 +6,7 @@
 #include "gui/splashscreen.h"
 #include <QSettings>
 #include "core/configparser.h"
+#include "test/test.h"
 using namespace UIC;
 
 
@@ -38,10 +39,9 @@ int main(int argc, char * argv[])
     sPath += QString("/plugins");
    app.addLibraryPath(sPath);
 
-   Browser b;
+  // Browser b;
 
-  //  CUCCore::ConfigParser par;
-
+Tst_NetWorkManager tn;
 
     return app.exec();
 }

@@ -52,7 +52,7 @@ public:
     enum  parserError
     {
 
-        OPEN_SETTINGS_FILE_FAILD //打开配置文件失败
+        OPEN_SETTINGS_FILE_FAILD=1 //打开配置文件失败
 
     };
      bool parse();
@@ -60,7 +60,7 @@ public:
     void test();
 #endif
 signals:
-    void fatalError(parserError);
+    void fatalError(int);
 
 protected:
     /*

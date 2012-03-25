@@ -29,7 +29,7 @@ ConfigParser::ConfigParser(QObject *parent):QObject(parent),setting_(NULL)
 
     qDebug()<<"ConfigParser::ConfigParser()：ConfigParser created";
 #ifdef CUC_TEST
-    test();
+  //  test();
 #endif
 
 
@@ -57,7 +57,7 @@ bool ConfigParser::parserConfigFile()
         FILE_OPEN_ERROR(file);
         //在文件存在的情况下打不开，则发出致命错误信号，由Browser类处理
         emit fatalError(OPEN_SETTINGS_FILE_FAILD);
-
+        return false;
     }
     else
     {
@@ -70,7 +70,10 @@ bool ConfigParser::parserConfigFile()
         //注意：下面的读入顺序不可改变！
         in>>host_url>>title>>ismaxsize>>width>>height;
         this->setting_=new PlatformSetting(host_url,title,ismaxsize,width,height,this);
+        file.close();
+#ifdef CUC_TEST
         setting_->tst_print();
+  #endif
         return true;
     }
 }

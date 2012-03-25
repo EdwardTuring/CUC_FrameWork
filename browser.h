@@ -29,7 +29,8 @@ public slots:
 protected slots:
     void finishLoad();
     void startTimeCount();
-    void fatalErroroccurred(CUCCore::ConfigParser::parserError error_code);
+    void fatalErroroccurred(int error_code);
+    void doExit();
 private:
 
     void handleConfig();
