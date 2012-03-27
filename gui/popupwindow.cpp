@@ -16,7 +16,7 @@ void PopupWindow::showMaxsize()
 void PopupWindow::closeEvent(QCloseEvent *event)
 {
 
-
+   // BROWSER->getMainWindow()->getPopWindows()->
     delete this;
 
 }

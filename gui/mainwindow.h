@@ -42,7 +42,7 @@ public slots:
 protected:
     void setActionsAndShortCuts();
     void changeEvent(QEvent *event);
-
+    virtual void closeEvent(QCloseEvent *);
 protected slots:
     void toFullScreen();
     void toNormalScreen();

@@ -147,6 +147,11 @@ void MainWindow::changeEvent(QEvent *event)
 
 
 }
+void MainWindow::closeEvent(QCloseEvent *e)
+{
+    //TODO:处理关闭窗口事件
+    QApplication::exit();
+}
 
 void MainWindow::Move(float x,float y)
 {

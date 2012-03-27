@@ -53,7 +53,7 @@ QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
     QUrl url("");
     UIC::MainWindow *mainwindow=BROWSER->getMainWindow();
     UIC::PopupWindow *wnd;
-    if(feature.dialog)
+    if(!feature.dialog)
     {
         wnd=new  UIC::PopupWindow(mainwindow);
     }
