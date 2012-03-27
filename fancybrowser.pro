@@ -18,7 +18,8 @@ HEADERS =   \
     tool.h \
     core/networkmanager.h \
     test/tst_networkmanager.h \
-    test/test.h
+    test/test.h \
+    config.h
 SOURCES =   main.cpp \
     browser.cpp \
     gui/popupwindow.cpp \
@@ -65,4 +66,4 @@ FORMS += \
     gui/ui/aboutdialog.ui \
     gui/ui/guidedialog.ui
 
-DEFINES+=CUC_DEBUG CUC_TEST
+DEFINES+=CUC_DEBUG

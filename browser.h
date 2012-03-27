@@ -30,7 +30,7 @@ protected slots:
     void finishLoad();
     void startTimeCount();
     void fatalErroroccurred(int error_code);
-    void doExit();
+    void doExit(bool);
 private:
 
     void handleConfig();

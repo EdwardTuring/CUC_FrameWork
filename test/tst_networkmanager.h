@@ -1,3 +1,4 @@
+#ifdef CUC_TEST
 #ifndef TST_NETWORKMANAGER_H
 #define TST_NETWORKMANAGER_H
 
@@ -15,7 +16,8 @@ public slots:
 private slots:
     void testFaild(QString msg);
 private:
-    NetWorkManager *manager_;
+    CUCCore::NetWorkManager *manager_;
 };
 
 #endif // TST_NETWORKMANAGER_H
+#endif

@@ -91,7 +91,7 @@ void Browser::handleConfig()
         这里应该开辟一个http线程来做这个工作。
         */
         GuideDialog gdialog;
-        CONNECT(&gdialog,quit(),this,doExit());
+        CONNECT(&gdialog,quit(bool),this,doExit(bool));
 
         gdialog.exec();//执行
 
@@ -100,9 +100,24 @@ void Browser::handleConfig()
 /*
 *Browser::exit():利用系统调用exit退出进程
 */
-void Browser::doExit()
+void Browser::doExit(bool ispassed)
 {
-    exit(0);
+
+    if(!ispassed)
+        exit(0);
+    else
+    {
+        if(config_parser_->parse())
+        {
+            //读取配置文件的内容：
+            readConfig();
+        }
+        else
+        {
+            //处理解析失败
+        }
+    }
+
 }
 
 Browser::~Browser()
@@ -113,8 +128,8 @@ Browser::~Browser()
 void Browser::readConfig()
 {
 
-
-    url_=config_parser_->getPlatformSetting()->getHostUrl();
+    //通常是http协议；我知道这很不优雅。。暂时这样吧
+    url_="http://"+config_parser_->getPlatformSetting()->getHostUrl();
     title_=config_parser_->getPlatformSetting()->getWindowTitle();
     width_=config_parser_->getPlatformSetting()->getWindowWidth();
     height_=config_parser_->getPlatformSetting()->getWindowHeight();

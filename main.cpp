@@ -39,9 +39,11 @@ int main(int argc, char * argv[])
     sPath += QString("/plugins");
    app.addLibraryPath(sPath);
 
-  // Browser b;
 
+#ifdef CUC_TEST
 Tst_NetWorkManager tn;
-
+#else
+   Browser b;
+#endif
     return app.exec();
 }

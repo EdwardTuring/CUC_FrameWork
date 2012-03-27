@@ -13,10 +13,10 @@ public:
      当设置为最大化时，这两项会被忽略）。
      */
     PlatformSetting(const QString &host_url,
-                    const QString &title,
-                    bool ismaxsize,
-                    int width,
-                    int height,
+                    const QString &title="Web App共性支撑平台",
+                    bool ismaxsize=true,
+                    int width=800,
+                    int height=600,
                     QObject *parent=0
                     );
     //PlatformSetting(const PlatformSetting &other);

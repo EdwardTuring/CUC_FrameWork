@@ -1,6 +1,8 @@
 #include "networkmanager.h"
 #include "tool.h"
+#include "configparser.h"
  #include <QDomElement>
+namespace CUCCore{
 NetWorkManager::NetWorkManager(const QString &url,QObject *parent) :
     QNetworkAccessManager(parent)
 {
@@ -11,7 +13,7 @@ NetWorkManager::NetWorkManager(const QString &url,QObject *parent) :
 #ifdef CUC_TEST
     CONNECT(this,finished(QNetworkReply*),this,tst_getFilesWithHttp(QNetworkReply*));
 #else
-    CONNECT(manager_,finished(QNetworkReply*),this,replyFinished(QNetworkReply*));
+    CONNECT(this,finished(QNetworkReply*),this,replyFinished(QNetworkReply*));
 #endif
 
 }
@@ -31,13 +33,28 @@ void NetWorkManager::tst_getFilesWithHttp(QNetworkReply *reply)
         QTextStream out(&file);
         QByteArray tmp_a=reply->readAll();
          QString tmp_str=QString::fromUtf8(tmp_a);
-       //test
-        QDomDocument d;
-          d.setContent(tmp_str);
+         //按照服务器端的php脚本所指定的规则，当返回的是空字符串时，则验证失败；
+         if(tmp_str=="")
+         {
+             //发送验证失败的信号
+             emit wrongVerifCode();
+             qDebug()<<"验证失败";
+             return ;
+         }
+    qDebug()<<tmp_str;
+        QDomDocument doc;
+          doc.setContent(tmp_str);
         //TODO:将xml字符串解析到一个结构体中，后面使用
-        //test end
 
-        qDebug()<<tmp_str;
+        QDomElement docElem = doc.documentElement();
+        //qDebug()<<docElem.tagName();
+        QString customer_name=docElem.attribute("name");
+        QDomElement server_el=docElem.firstChildElement("server");
+        QString host=server_el.firstChildElement("host").text();
+        QString path=server_el.firstChildElement("path").text();
+        QString url=host+"/"+path;
+        qDebug()<<"客户："+customer_name;
+        qDebug()<<"地址："+url;
         out<<tmp_a;
         file.close();
 
@@ -46,6 +63,7 @@ void NetWorkManager::tst_getFilesWithHttp(QNetworkReply *reply)
 
 
 }
+#endif
  NetWorkManager::~NetWorkManager()
 {
 
@@ -70,23 +88,71 @@ void NetWorkManager::get()
     CONNECT(reply_,readyRead(),this,replyReadyRead());
     CONNECT(reply_,error(QNetworkReply::NetworkError),this,replyError(QNetworkReply::NetworkError));
     CONNECT(reply_,	downloadProgress ( qint64 , qint64  ),this,downloadProess(qint64,qint64));
+
 }
 void NetWorkManager::replyReadyRead()
 {
     qDebug()<<"NetWorkManager::replyReadyRead():called";
 }
 
+
 void NetWorkManager::replyFinished(QNetworkReply *reply)
 {
     qDebug()<<"NetWorkManager::replyFinished():called";
-    //TODO:将获得的信息存入settings.dat中
 
+    //将http协议获取到的信息存入tmp_str,注意编码转换；并利用qt提供的
+    //xml解析类构建一个QDomElement对象。
+    QByteArray tmp_a=reply->readAll();
+    QString tmp_str=QString::fromUtf8(tmp_a);
+    //按照服务器端的php脚本所指定的规则，当返回的是空字符串时，则验证失败；
+    if(tmp_str=="")
+    {
+        //发送验证失败的信号
+        emit httpProessFinished("",false);
+        qDebug()<<"验证失败";
+        return ;
+    }
+    QDomDocument doc;
+    doc.setContent(tmp_str);
+    QDomElement doc_el = doc.documentElement();
 
+    //从xml字符串tmp_str中获取有关信息
+    QString customer_name=doc_el.attribute("name");
+    QDomElement server_el=doc_el.firstChildElement("server");
+    QString host=server_el.firstChildElement("host").text();
+    QString path=server_el.firstChildElement("path").text();
+    QString url=host+"/"+path;
+
+    //将得到的客户名字和服务器地址以二进制形式存入settings.dat中
+    PlatformSetting t_setting(url,"UICreator");
+    QFile file(qApp->applicationDirPath()+"/data/settings.dat");
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        FILE_OPEN_ERROR(file);
+
+    }
+    else
+    {
+        QDataStream out(&file);
+        out<<t_setting.getHostUrl();
+        out<<t_setting.getWindowTitle();
+        out<<t_setting.getWindowISMaxsize();
+        out<<t_setting.getWindowWidth();
+        out<<t_setting.getWindowHeight();
+        out.setVersion(QDataStream::Qt_4_0);
+        qDebug()<<"NetWorkManager::replyFinished()：write setting data completed";
+    }
+
+    //服务器地址写入settings.dat文件之后，就可以向GUI模块发送完成的信号了，注意也要将
+    //客户的名字一并发送给GUI。
+    emit httpProessFinished(customer_name,true);
 
 }
 void NetWorkManager::downloadProess(qint64 bytesReceived, qint64 bytesTotal)
 {
     qDebug()<<"NetWorkManager::downloadProess():"+QString::number(bytesReceived)+"/"+QString::number(bytesTotal);
+    //向呈现层发送进度：
+    emit downloadProgress(bytesReceived,bytesTotal);
+}
 }
 
-#endif
