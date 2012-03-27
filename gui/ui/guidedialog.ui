@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>中国传媒大学新媒体研究院客户验证程序</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

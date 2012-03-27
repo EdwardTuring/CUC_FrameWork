@@ -15,14 +15,14 @@ Browser::Browser(QObject *parent) :
     CONNECT(config_parser_,fatalError(int),this,fatalErroroccurred(int));
     handleConfig();
     time_openwindow_ = new QTimer(this); //初始化定时器
-    QPixmap pixmap(":/init_pic.jpg");
+    QPixmap pixmap(":/startup_ui.png");
     BROWSER=this;
     splash_ = new SplashScreen(pixmap);
     qApp->processEvents();
     splash_->show();
 
 
-    splash_->showMessage("正在为你载入UICreator...");
+
 
 
 

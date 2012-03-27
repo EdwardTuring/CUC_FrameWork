@@ -8,5 +8,6 @@
         <file>wait.gif</file>
         <file>logo_webkit.png</file>
         <file>logo_cuc.jpg</file>
+        <file>startup_ui.png</file>
     </qresource>
 </RCC>

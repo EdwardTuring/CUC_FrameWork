@@ -52,8 +52,17 @@ QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
 
     QUrl url("");
     UIC::MainWindow *mainwindow=BROWSER->getMainWindow();
-    UIC::PopupWindow *wnd=new  UIC::PopupWindow;
+    UIC::PopupWindow *wnd;
+    if(feature.dialog)
+    {
+        wnd=new  UIC::PopupWindow(mainwindow);
+    }
 
+    else
+    {
+
+        wnd=new  UIC::PopupWindow;
+    }
     QVector<UIC::PopupWindow *> *popwnds=mainwindow->getPopWindows();
     popwnds->push_back(wnd);
    // QMap<QString ,UIC::PopupWindow *> *children= BROWSER->getMainWindow()->getChildWindow();
