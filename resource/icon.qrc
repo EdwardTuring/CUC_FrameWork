@@ -9,7 +9,7 @@
         <file>logo_cuc.jpg</file>
         <file>init_ftp_client.jpg</file>
         <file>ftpclient.png</file>
-        <file>startup.png</file>
         <file>loading.png</file>
+        <file>startup.png</file>
     </qresource>
 </RCC>

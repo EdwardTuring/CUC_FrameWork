@@ -13,12 +13,9 @@ WebView::WebView(QWidget *parent) :
     this->page()->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows,true);
 
     this->page()->settings()->setAttribute(QWebSettings::PluginsEnabled,true);
-     this->page()->settings()->setAttribute(QWebSettings::OfflineStorageDatabaseEnabled,true);
-    this->page()->settings()->setAttribute(QWebSettings::OfflineWebApplicationCacheEnabled,true);
-   this->page()->settings()->setAttribute(QWebSettings::LocalStorageEnabled,true);
-  // this->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,true);
-   // QWebSettings::enablePersistentStorage();
-    setContextMenuPolicy (Qt::NoContextMenu);
+  this->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,true);
+    QWebSettings::enablePersistentStorage();
+  //  setContextMenuPolicy (Qt::NoContextMenu);
 
     // π”√ª∫¥Ê:
     QNetworkDiskCache *diskCache=new QNetworkDiskCache(this);

@@ -26,12 +26,13 @@ SOURCES =   main.cpp \
     gui/ui/aboutdialog.cpp
 RESOURCES = \
     resource/icon.qrc
-TARGET =Mipa
+TARGET =client_Dev
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
 sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
-INSTALLS += target sources
+
+CONFIG+=console
 
 symbian {
     TARGET.UID3 = 0xA000CF6C

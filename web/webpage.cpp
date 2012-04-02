@@ -12,10 +12,35 @@ namespace Web
 WebPage::WebPage(QWidget *parent):QWebPage(parent)
 {
     this->windowx_=new JSOBJWindowx(this);
-
+    getPluginsFromDll();
     //plugins=new QVector<Plugin::CUCPluginInterface* >;
     CONNECT(this->mainFrame(),javaScriptWindowObjectCleared(),this,addJSOBJ());
 
+
+}
+void WebPage::getPluginsFromDll()
+{
+    QDir pluginsDir = QDir(qApp->applicationDirPath());
+    pluginsDir.cd("plugins/cuc_plugins");
+    QStringList filters;
+      filters << "*.dll" ;
+       pluginsDir.setNameFilters(filters);
+    foreach (QString fileName,pluginsDir.entryList(filters))
+    {
+        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
+        QObject *plugin = loader.instance();
+        fileName.truncate(fileName.lastIndexOf("."));
+        qDebug()<<"loading plugin:"+fileName;
+        if (plugin)
+        {
+               plugins_.insert(fileName,plugin);
+               qDebug()<<(fileName+" loaded");
+        }
+    }
+}
+
+WebPage::~WebPage()
+{
 
 }
 
@@ -88,23 +113,13 @@ QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
 }
 void WebPage::addJSOBJ()
 {
-    //载入插件{
-    QDir pluginsDir = QDir(qApp->applicationDirPath());
-    pluginsDir.cd("plugins/cuc_plugins");
-    QStringList filters;
-      filters << "*.dll" ;
-       pluginsDir.setNameFilters(filters);
-    foreach (QString fileName,pluginsDir.entryList(filters))
+    QList<QString> plugin_names=plugins_.keys();
+    for(int i=0;i<plugins_.size();i++)
     {
-        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
-        QObject *plugin = loader.instance();
-        fileName.truncate(fileName.lastIndexOf("."));
-        qDebug()<<"loading plugin:"+fileName;
-        if (plugin)
-        {
-               this->mainFrame()->addToJavaScriptWindowObject(fileName,plugin);
-               qDebug()<<(fileName+"loaded");
-        }
+        QString plugin_name=plugin_names[i];
+
+            //TODO:遍历QMap plugins，将QObject对象载入到javaScript解释器中
+            this->mainFrame()->addToJavaScriptWindowObject(plugin_name,plugins_[plugin_name]);
     }
     if(this->windowx_)
     {

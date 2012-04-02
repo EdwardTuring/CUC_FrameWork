@@ -39,7 +39,7 @@ QString JSOBJWindowx::getChildWindow()
 }
 void JSOBJWindowx::quit()
 {
-    qobject_cast<QWidget*>(qobject_cast<QWebPage*>(parent())->view()->parent())->close();
+   qobject_cast<QWidget*>(qobject_cast<QWebPage*>(parent())->view()->parent())->close();
 }
 
 void JSOBJWindowx::closeChildWindow(const QString title)
