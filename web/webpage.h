@@ -16,7 +16,7 @@ public:
 protected:
     void javaScriptAlert ( QWebFrame * frame, const QString & msg );
     bool javaScriptConfirm( QWebFrame * frame, const QString & msg );
-    QWebPage *createWindow(WindowFeaturesQt feature);
+    QWebPage *createWindow(WebWindowType type );
 public slots:
     void addJSOBJ();
 private:
