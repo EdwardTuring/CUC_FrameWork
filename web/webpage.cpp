@@ -5,7 +5,7 @@
 #include "browser.h"
 #include "../gui/mainwindow.h"
 #include "../gui/popupwindow.h"
-
+#include "plugin/ftp/ftpplugin.h"
 extern UIC::Browser *BROWSER;
 namespace Web
 {
@@ -30,6 +30,12 @@ void WebPage::getPluginsFromDll()
         QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = loader.instance();
         fileName.truncate(fileName.lastIndexOf("."));
+        if(fileName=="ftp")
+        {
+            //若果是ftp插件的话，做出针对于此软件的处理；
+            FtpPlugin *ftpplugin=qobject_cast<FtpPlugin *>(plugin);
+            ftpplugin->setNetWorkManager(this->networkAccessManager());
+        }
         qDebug()<<"loading plugin:"+fileName;
         if (plugin)
         {
@@ -70,17 +76,44 @@ bool WebPage::javaScriptConfirm( QWebFrame * frame, const QString & msg )
 }
 
 
-QWebPage *WebPage::createWindow(WebWindowType type)
+QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
 {
 
     QUrl url("");
-    UIC::PopupWindow *wnd=new  UIC::PopupWindow(BROWSER->getMainWindow());
-    QMap<QString ,UIC::PopupWindow *> *children= BROWSER->getMainWindow()->getChildWindow();
+        UIC::MainWindow *mainwindow=BROWSER->getMainWindow();
+        UIC::PopupWindow *wnd;
+        if(feature.dialog)
+        {
+            wnd=new  UIC::PopupWindow(mainwindow);
+        }
 
-    //设置为主窗体的网络连接管理类，解决cookie不一致的问题
-    wnd->view()->page()->setNetworkAccessManager(networkAccessManager());
+        else
+        {
 
-    return wnd->view()->page();
+            wnd=new  UIC::PopupWindow;
+        }
+
+
+        QString title=feature.title;
+
+        wnd->setTitle(title);
+
+        QDesktopWidget* desktopWidget = QApplication::desktop();
+        //获取可用桌面大小
+        QRect d = desktopWidget->availableGeometry();
+        //移动至屏幕中央
+        wnd->move((d.width()-feature.width)/2,(d.height()-feature.height)/2);
+        //重设窗口大小
+        wnd->ReSize(feature.width,feature.height);
+
+        if(feature.maxsize)
+            wnd->showMaxsize();
+        if(feature.fullscreen)
+            wnd->showFullScreen();
+        //设置为主窗体的网络连接管理类，解决cookie不一致的问题
+        wnd->view()->page()->setNetworkAccessManager(networkAccessManager());
+
+        return wnd->view()->page();
 
 }
 void WebPage::addJSOBJ()

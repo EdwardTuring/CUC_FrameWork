@@ -81,7 +81,11 @@ FtpPlugin::FtpPlugin(QObject *parent):QObject(parent)
     ftp=new QFtp(this);
 
     manager_=new TaskManager(this);
+    data_helper_=new FtpDataHelper(this);
 
+    /*连接FtpDataHelper的信号槽*/
+    connect(data_helper_,SIGNAL(ftpDataFinished(const QString &)),
+            this,SLOT(slot_ftpDataFinished(const QString &)));
     connect(ftp, SIGNAL(commandFinished(int,bool)),
                 this, SLOT(ftpCommandFinished(int,bool)));
     connect(ftp, SIGNAL(listInfo(QUrlInfo)),
@@ -90,6 +94,16 @@ FtpPlugin::FtpPlugin(QObject *parent):QObject(parent)
         this, SLOT(updateDataTransferProgress(qint64,qint64)));
     connect(this,SIGNAL(signal_startNextTask()),this,SLOT(startNextTask()));
 }
+void FtpPlugin::postFtpData(const QString &url,
+                        const QString &tag,
+                        const QString &dir,
+                        const QString &filename,
+                        const QString &filedescription, const QString &file_start_put_time)
+{
+    qDebug()<<"FtpPlugin::postFtpData():called";
+    data_helper_->postFtpData(url,tag,dir,filename,filedescription,file_start_put_time);
+}
+
 void FtpPlugin::getListInfo(const QUrlInfo &i)
 {
     qDebug()<<"getListInfo works";
@@ -352,6 +366,14 @@ void FtpPlugin::startNextTask()
        // ftp->close();
     }
 
+}
+void FtpPlugin::slot_ftpDataFinished(const QString &msg)
+{
+    /*具体的操作应该交给javascript层去处理，所以这里只是简单地
+      转发了FtpDataHelper类的信号。而javascript层则负责去捕捉着这个
+      信号（signal_PostDataFinished）。
+    */
+    emit signal_PostDataFinished(msg);
 }
 
 int FtpPlugin::mkdir(const QString &foldername)

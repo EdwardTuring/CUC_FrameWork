@@ -1,4 +1,5 @@
-
+#ifndef CUCPLUGININTERFACE_H
+#define CUCPLUGININTERFACE_H
 #include <QtCore>
 #include <QtPlugin>
 namespace Plugin
@@ -19,3 +20,4 @@ class CUCPluginInterface
 
  };
 Q_DECLARE_INTERFACE(CUCPluginInterface,"cn.edu.cuc.CUCPluginInterface/0.1")
+#endif
