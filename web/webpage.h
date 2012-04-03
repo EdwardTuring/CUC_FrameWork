@@ -20,11 +20,12 @@ protected:
     QWebPage *createWindow(WindowFeaturesQt feature);
 public slots:
     void addJSOBJ();
-
+private:
+    void getPluginsFromDll();
 private:
 
     JSOBJWindowx *windowx_;
-    QVector<QObject *> *plugins;
+    QMap<QString,QObject*> plugins_;
 };
 }// namespace Web
 #endif // WEBPAGE_H

@@ -12,10 +12,36 @@ namespace Web
 WebPage::WebPage(QWidget *parent, QWidget *mainwindow):QWebPage(parent)
 {
     this->windowx_=new JSOBJWindowx(mainwindow);
+    getPluginsFromDll();
     //下面连结事件：
     CONNECT(windowx_,closeMe(QWidget *),BROWSER,closeChildWindow(QWidget *));
     //plugins=new QVector<Plugin::CUCPluginInterface* >;
     CONNECT(this->mainFrame(),javaScriptWindowObjectCleared(),this,addJSOBJ());
+}
+void WebPage::getPluginsFromDll()
+{
+    QDir pluginsDir = QDir(qApp->applicationDirPath());
+    pluginsDir.cd("plugins/cuc_plugins");
+    QStringList filters;
+    filters << "*.dll" ;
+    pluginsDir.setNameFilters(filters);
+    foreach (QString fileName,pluginsDir.entryList(filters))
+    {
+        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
+        QObject *plugin = loader.instance();
+        fileName.truncate(fileName.lastIndexOf("."));
+        qDebug()<<"loading plugin:"+fileName;
+        if (plugin)
+        {
+            plugins_.insert(fileName,plugin);
+            qDebug()<<(fileName+" loaded");
+        }
+        else
+        {
+            //处理载入动态链接库的错误：
+            qDebug()<<"WebPage::getPluginsFromDll()："+loader.errorString();
+        }
+    }
 }
 WebPage::WebPage(QWidget *parent):QWebPage(parent)
 {
@@ -104,23 +130,14 @@ QWebPage *WebPage::createWindow(WindowFeaturesQt feature)
 void WebPage::addJSOBJ()
 {
     //载入插件{
-    QDir pluginsDir = QDir(qApp->applicationDirPath());
-    pluginsDir.cd("plugins/cuc_plugins");
-    QStringList filters;
-      filters << "*.dll" ;
-       pluginsDir.setNameFilters(filters);
-    foreach (QString fileName,pluginsDir.entryList(filters))
-    {
-        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
-        QObject *plugin = loader.instance();
-        fileName.truncate(fileName.lastIndexOf("."));
-        qDebug()<<"loading plugin:"+fileName;
-        if (plugin)
-        {
-               this->mainFrame()->addToJavaScriptWindowObject(fileName,plugin);
-               qDebug()<<(fileName+"loaded");
-        }
-    }
+    QList<QString> plugin_names=plugins_.keys();
+       for(int i=0;i<plugins_.size();i++)
+       {
+           QString plugin_name=plugin_names[i];
+
+               //TODO:遍历QMap plugins，将QObject对象载入到javaScript解释器中
+               this->mainFrame()->addToJavaScriptWindowObject(plugin_name,plugins_[plugin_name]);
+       }
     if(this->windowx_)
     {
         this->mainFrame()->addToJavaScriptWindowObject("windowx",this->windowx_);
