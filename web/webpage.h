@@ -4,7 +4,7 @@
 #include <QtCore>
 #include <QWebInspector>
 #include "object/jsobjwindowx.h"
-#include "../plugin/CUCplugininterface.h"
+
 namespace Web
 {
 class WebPage : public QWebPage
@@ -32,6 +32,12 @@ private:
 private:
 
     JSOBJWindowx *windowx_;
+    /**
+    *现在，我将FtpPlugin直接嵌入浏览器壳；（针对此项目）
+    @author Ma Xiao
+    @date 2012.4.4
+    */
+
 
     QMap<QString,QObject *> plugins_;
 };

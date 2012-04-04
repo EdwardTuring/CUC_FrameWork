@@ -14,6 +14,8 @@ signals:
     
 public slots:
     void slot_tst_postFinished(const QString &);
+private:
+    FtpDataHelper *helper_;
 };
 
 #endif // TST_FTPDATAHELPER_H

@@ -3,14 +3,8 @@
 
 #include <QtCore>
 #include <QFtp>
-#include "../CUCplugininterface.h"
 #include "ftpdatahelper.h"
-namespace Plugin
-{
-class FtpPlugin;
-class CUCPluginInterface;
-
-}
+#include "../CUCplugininterface.h"
 /*
 *   FtpTask 单个的ftp上、下传任务的类。
 */
@@ -34,6 +28,7 @@ FtpPlugin类的成员，被FtpPlugin类调用。（与js代码的交互）
 class TaskManager:public QObject
 {
     Q_OBJECT
+
 public:
     TaskManager(QObject *parent=0);
     ~TaskManager();
@@ -55,13 +50,13 @@ class FtpPlugin:public QObject,public CUCPluginInterface
 {
     Q_OBJECT
 #ifndef CUC_TEST
-    Q_INTERFACES(CUCPluginInterface)
+       Q_INTERFACES(CUCPluginInterface)
 #endif
 public:
 
     FtpPlugin(QObject *parent=0);
 
-    void setNetWorkManager(QNetworkAccessManager *ma){data_helper_->setNetWorkManager(ma);}
+    void setNetWorkManager(QNetworkAccessManager *ma);
 public slots:
 
     virtual void debug() const;
@@ -86,8 +81,10 @@ public slots:
                      const QString &tag,
                      const QString &dir,
                      const QString &filename,
-                     const QString &filedescription, const QString &file_start_put_time);
+                     const QString &filedescription, const QString &file_start_put_time,const QString &uid);
 
+    /*重载一下postFtpData成员函数，使用回方便些*/
+    void postFtpData(const QString &url,const QMap<QString, QVariant>& obj);
 
     int	close ();
     int	connectToHost( const QString & host, QString  port = "21" );

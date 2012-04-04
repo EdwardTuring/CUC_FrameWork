@@ -26,6 +26,7 @@ int main(int argc, char * argv[])
 {
     QApplication app(argc, argv);
     setCodec();
+ #ifndef CUC_TEST
     app.setOrganizationName("CUC");
     app.setApplicationName("Ftp_Client");
     app.setApplicationVersion("2.0");
@@ -40,6 +41,8 @@ int main(int argc, char * argv[])
    Browser b;
 
    BROWSER=&b;
+#else
 
+#endif
     return app.exec();
 }

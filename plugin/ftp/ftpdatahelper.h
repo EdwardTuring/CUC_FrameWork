@@ -3,13 +3,8 @@
 
 #include <QtCore>
 #include <QNetworkAccessManager>
-#include "../CUCplugininterface.h"
 #include <QNetworkReply>
-namespace Plugin
-{
-    class FtpDataHelper;
 
-}
 /**
   FtpDataHelper:这个类帮助ftp插件（FtpPlugin）向服务器传递相关信息。
   （操蛋的$.post的不稳定，不得已的做法。或许在未来的QtWebKit版本中这个bug可以
@@ -47,23 +42,32 @@ public slots:
                       const QString &tag,
                       const QString &dir,
                       const QString &filename,
-                      const QString &filedescription, const QString &file_start_put_time);
+                      const QString &filedescription, const QString &file_start_put_time,const QString &uid);
 
-    /*注意：插件在载入后，首先执行此成员函数以保证与WebPage类的
+     void FtpDataHelper::postFtpData(const QString &url,
+                                     const QList<QVariant> &tag,
+                                     const QString &dir,
+                                     const QString &filename,
+                                     const QString &filedescription,
+                                     const QString &file_start_put_time, const QString &uid);
+
+     /*注意：插件在载入后，首先执行此成员函数以保证与WebPage类的
         网络通信一致*/
  public:
      void setNetWorkManager(QNetworkAccessManager *manager){manager_=manager;}
 
 private slots:
      void replyError(QNetworkReply::NetworkError);
-     void postFinished(QNetworkReply * reply);
+     void postFinished();
 #ifdef CUC_TEST
-     void tst_postFinished(QNetworkReply* reply);
+     void tst_postFinished();
 
 #endif
 private:
     /*qt 网络通信管理类，通过这个类实现http post*/
     QNetworkAccessManager *manager_;
+
+    QNetworkReply *reply_;
 };
 
 

@@ -11,7 +11,8 @@ HEADERS =   \
     web/object/jsobjwindowx.h \
     gui/ui/slidewidget.h \
     gui/ui/repodialog.h \
-    gui/ui/aboutdialog.h
+    gui/ui/aboutdialog.h \
+
 SOURCES =   main.cpp \
     browser.cpp \
     gui/popupwindow.cpp \
@@ -23,7 +24,8 @@ SOURCES =   main.cpp \
     web/object/jsobjwindowx.cpp \
     gui/ui/slidewidget.cpp \
     gui/ui/repodialog.cpp \
-    gui/ui/aboutdialog.cpp
+    gui/ui/aboutdialog.cpp \
+
 RESOURCES = \
     resource/icon.qrc
 TARGET =client_Dev
@@ -31,7 +33,6 @@ TARGET =client_Dev
 target.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
 sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
-
 CONFIG+=console
 
 symbian {
@@ -43,7 +44,7 @@ maemo5: include($$PWD/../../maemo5pkgrules.pri)
 
 OTHER_FILES += \
     README
-
+DEFINES+=CUC_TEST
 
 RC_FILE = \
   icon.rc

@@ -94,14 +94,51 @@ FtpPlugin::FtpPlugin(QObject *parent):QObject(parent)
         this, SLOT(updateDataTransferProgress(qint64,qint64)));
     connect(this,SIGNAL(signal_startNextTask()),this,SLOT(startNextTask()));
 }
+void FtpPlugin::setNetWorkManager(QNetworkAccessManager *ma)
+{
+    data_helper_->setNetWorkManager(ma);
+}
+
 void FtpPlugin::postFtpData(const QString &url,
                         const QString &tag,
                         const QString &dir,
                         const QString &filename,
-                        const QString &filedescription, const QString &file_start_put_time)
+                        const QString &filedescription, const QString &file_start_put_time,const QString &uid)
 {
     qDebug()<<"FtpPlugin::postFtpData():called";
-    data_helper_->postFtpData(url,tag,dir,filename,filedescription,file_start_put_time);
+    data_helper_->postFtpData(url,tag,dir,filename,filedescription,file_start_put_time,uid);
+}
+void FtpPlugin::postFtpData(const QString &url, const QMap<QString, QVariant> &obj)
+{
+     qDebug()<<"FtpPlugin::postFtpData():called";
+     QString tags_str;
+     if(obj["tags"].type()==QVariant::List)
+     {
+         qDebug()<<"FtpPlugin::postFtpData():obj['tags'] is a array";
+         QList<QVariant> list=obj["tags"].toList();
+
+
+         data_helper_->postFtpData(url,
+                                    list,
+                                   obj["dir"].toString(),
+                                   obj["filename"].toString(),
+                                   obj["filedescription"].toString(),
+                                   obj["file_start_put_time"].toString(),
+                                   obj["uid"].toString());
+     }
+     else
+     {
+
+         data_helper_->postFtpData(url,
+                                     obj["tags"].toString(),
+                                   obj["dir"].toString(),
+                                   obj["filename"].toString(),
+                                   obj["filedescription"].toString(),
+                                   obj["file_start_put_time"].toString(),
+                                   obj["uid"].toString());
+     }
+
+
 }
 
 void FtpPlugin::getListInfo(const QUrlInfo &i)

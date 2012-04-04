@@ -2,18 +2,21 @@
 #include "qt4.h"
 #include <QWebFrame>
 #include <QDir>
+
 #include "browser.h"
 #include "../gui/mainwindow.h"
 #include "../gui/popupwindow.h"
-#include "plugin/ftp/ftpplugin.h"
+
 extern UIC::Browser *BROWSER;
 namespace Web
 {
 WebPage::WebPage(QWidget *parent):QWebPage(parent)
 {
     this->windowx_=new JSOBJWindowx(this);
+    /*初始化ftp功能类*/
+
     getPluginsFromDll();
-    //plugins=new QVector<Plugin::CUCPluginInterface* >;
+
     CONNECT(this->mainFrame(),javaScriptWindowObjectCleared(),this,addJSOBJ());
 
 
@@ -30,12 +33,7 @@ void WebPage::getPluginsFromDll()
         QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = loader.instance();
         fileName.truncate(fileName.lastIndexOf("."));
-        if(fileName=="ftp")
-        {
-            //若果是ftp插件的话，做出针对于此软件的处理；
-            FtpPlugin *ftpplugin=qobject_cast<FtpPlugin *>(plugin);
-            ftpplugin->setNetWorkManager(this->networkAccessManager());
-        }
+
         qDebug()<<"loading plugin:"+fileName;
         if (plugin)
         {
@@ -129,6 +127,10 @@ void WebPage::addJSOBJ()
     if(this->windowx_)
     {
         this->mainFrame()->addToJavaScriptWindowObject("windowx",this->windowx_);
+    }
+    if(this->ftpplugin_)
+    {
+        this->mainFrame()->addToJavaScriptWindowObject("ftp",this->ftpplugin_);
     }
 }
 }//namespace Web
