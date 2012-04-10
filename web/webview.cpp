@@ -13,8 +13,8 @@ WebView::WebView(QWidget *parent) :
     this->page()->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows,true);
 
     this->page()->settings()->setAttribute(QWebSettings::PluginsEnabled,true);
-  this->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,true);
-    QWebSettings::enablePersistentStorage();
+  //this->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,true);
+//   QWebSettings::enablePersistentStorage();
   //  setContextMenuPolicy (Qt::NoContextMenu);
 
     // π”√ª∫¥Ê:

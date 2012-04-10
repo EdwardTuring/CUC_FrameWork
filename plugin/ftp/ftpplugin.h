@@ -17,8 +17,14 @@ public:
     QString info;//!important:用于传递信息
     int type;//type:0=>get,1=>put
     //拷贝构造函数
+
+    /*下面的两个变量用于存放post的信息*/
+    QString post_data_url_;
+    QMap<QString,QVariant> post_datas_;
+
     FtpTask(const FtpTask &other);
     FtpTask();
+    ~FtpTask();
 };
 
 /*
@@ -33,7 +39,11 @@ public:
     TaskManager(QObject *parent=0);
     ~TaskManager();
     void addGetTask(const QString &info,const QString &url, const QString &des_url);
-    void addPutTask(const QString &info,const QString &url,const QString &file_name);
+
+    void addPutTask(const QString &info,
+                    const QString &post_data_url,
+                    const QMap<QString,QVariant> &post_datas,
+                    const QString &url,const QString &file_name);
     /*删除序列为i的任务*/
     void deleteTask(int i);
     /*如果有任务完成，那么List的首元素应该shift*/
@@ -56,7 +66,7 @@ public:
 
     FtpPlugin(QObject *parent=0);
 
-    void setNetWorkManager(QNetworkAccessManager *ma);
+
 public slots:
 
     virtual void debug() const;
@@ -68,7 +78,18 @@ public slots:
     /*下面方法调用TaskManager类的同名函数*/
 
     void addGetTask(const QString &info,const QString &url, const QString &des_url);
-    void addPutTask(const QString &info,const QString &url,const QString &file_name);
+   /**
+    *为了避免post数据导致ftp上传被挂起，我把post的相关参数直接放在FtpTask中；
+    *所以，在这里我需要利用addPutTask传入这些post参数:post的data_url地址，post的数据datas
+    @author Ma Xiao
+    @date 2012.4.5
+    */
+
+    void addPutTask(const QString &data_url,
+                    const QMap<QString,QVariant> &datas,
+                    const QString &url,
+                    const QString &file_name);
+
     void deleteTask(int i);
 
     /*isQueueEmpty:判断任务队列是否为空*/
@@ -106,14 +127,30 @@ signals:
     void listInfo( QString,bool);
     void dataTransferProgress(QString,QString);
     void signal_startNextTask();
-
+    void listFinished();
     void signal_PostDataFinished(const QString &);
 private slots:
+
+    /**
+    slot_ftpDataFinished 这个槽做两件事情：
+    1、开启任务管理器里的下一次任务。
+    2、再次发送一个http post完成的信号，javaScript部分应该能够捕捉到此信号，并作出相因的处理
+    @author Ma Xiao(mxturing@yeah.net)
+    @date 2012.4.5
+    */
+    void slot_ftpDataFinished(const QString &msg);
+    /**
+    slot_startNextTask 当上一次的任务完成的时候，检查是否为put类型；
+    若是，则触发post任务。
+    @author Ma Xiao(mxturing@yeah.net)
+    @date 2012.4.5
+    */
+    void slot_startNextTask();
+
+private://私有成员函数：
     /*开始下一个任务*/
     void startNextTask();
-    /*slot_ftpDataFinished 槽的作用是再次发送一个http post完成的信号，
-    javaScript部分应该能够捕捉到此信号，并作出相因的处理*/
-    void slot_ftpDataFinished(const QString &msg);
+
 private:
     QFtp *ftp;
     QFile *file_;

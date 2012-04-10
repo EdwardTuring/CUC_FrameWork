@@ -13,7 +13,7 @@ namespace Web
 WebPage::WebPage(QWidget *parent):QWebPage(parent)
 {
     this->windowx_=new JSOBJWindowx(this);
-    /*初始化ftp功能类*/
+
 
     getPluginsFromDll();
 
@@ -39,6 +39,10 @@ void WebPage::getPluginsFromDll()
         {
                plugins_.insert(fileName,plugin);
                qDebug()<<(fileName+" loaded");
+        }
+       else
+        {
+            qDebug()<<"载入插件失败："+loader.errorString();
         }
     }
 }
@@ -128,9 +132,6 @@ void WebPage::addJSOBJ()
     {
         this->mainFrame()->addToJavaScriptWindowObject("windowx",this->windowx_);
     }
-    if(this->ftpplugin_)
-    {
-        this->mainFrame()->addToJavaScriptWindowObject("ftp",this->ftpplugin_);
-    }
+
 }
 }//namespace Web

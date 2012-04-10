@@ -54,7 +54,7 @@ public slots:
      /*注意：插件在载入后，首先执行此成员函数以保证与WebPage类的
         网络通信一致*/
  public:
-     void setNetWorkManager(QNetworkAccessManager *manager){manager_=manager;}
+
 
 private slots:
      void replyError(QNetworkReply::NetworkError);

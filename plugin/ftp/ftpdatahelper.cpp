@@ -6,7 +6,7 @@
 FtpDataHelper::FtpDataHelper(QObject *parent):QObject(parent)
 {
     qDebug()<<"FtpDataHelper::FtpDataHelper():Class FtpDataHelper Created";
-    manager_=NULL;
+    manager_=new QNetworkAccessManager(this);
 
 }
 
@@ -38,12 +38,12 @@ void FtpDataHelper::postFtpData(const QString &url,
     data.append(params.toString());
     data.remove(0,1);
     /*post出去*/
-    QNetworkReply *reply=manager_->post(request,data);
+    reply_=manager_->post(request,data);
 #ifndef CUC_TEST
-    connect(manager_,SIGNAL(finished(QNetworkReply*)),this,SLOT(postFinished(QNetworkReply*)));
-      connect(reply,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(replyError(QNetworkReply::NetworkError)));
+    connect(reply_,SIGNAL(finished()),this,SLOT(postFinished()));
+      connect(reply_,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(replyError(QNetworkReply::NetworkError)));
 #else
-    connect(manager_,SIGNAL(finished(QNetworkReply*)),this,SLOT(tst_postFinished(QNetworkReply*)));
+    connect(reply_,SIGNAL(finished()),this,SLOT(tst_postFinished()));
 
 #endif
 
@@ -78,7 +78,7 @@ void FtpDataHelper::postFtpData(const QString &url,
      params.addQueryItem("uid",uid);
     qDebug()<<"now the params string are:"+params.toString();
 
-    data.append(params.toString());
+    data.append(params.toString().toUtf8());
     data.remove(0,1);
 
     /*post出去*/
@@ -108,6 +108,7 @@ void FtpDataHelper::tst_postFinished()
     QByteArray tmp=reply_->readAll();
     QString tmp_str(tmp);
     reply_->deleteLater();
+     emit ftpDataFinished(tmp_str);
     emit tst_ftpDataFinished(tmp_str);
 }
 #endif

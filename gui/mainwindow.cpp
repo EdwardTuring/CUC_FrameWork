@@ -125,7 +125,7 @@ void MainWindow::setActionsAndShortCuts()
      sht_normalscreen_=new QShortcut(QKeySequence(tr("F11")),this);
 
     connect( sht_fullscreen_, SIGNAL( activated() ), this, SLOT( toNormalScreen() ) );
-    CONNECT(sht_reload_,activated(),view_,reload());
+  //  CONNECT(sht_reload_,activated(),view_,reload());
      CONNECT(sht_normalscreen_,activated(),this,toFullOrNormalScreen());
 
   //  view_->setContextMenuPolicy(Qt::NoContextMenu);

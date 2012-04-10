@@ -33,7 +33,7 @@ TARGET =client_Dev
 target.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
 sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
-CONFIG+=console
+
 
 symbian {
     TARGET.UID3 = 0xA000CF6C
@@ -44,7 +44,7 @@ maemo5: include($$PWD/../../maemo5pkgrules.pri)
 
 OTHER_FILES += \
     README
-DEFINES+=CUC_TEST
+
 
 RC_FILE = \
   icon.rc
