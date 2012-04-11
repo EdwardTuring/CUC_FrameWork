@@ -15,7 +15,7 @@ Browser::Browser(QObject *parent) :
     CONNECT(config_parser_,fatalError(int),this,fatalErroroccurred(int));
     handleConfig();
     time_openwindow_ = new QTimer(this); //初始化定时器
-    QPixmap pixmap(":/startup_ui.png");
+    QPixmap pixmap(":/startup.png");
     BROWSER=this;
     splash_ = new SplashScreen(pixmap);
     qApp->processEvents();

@@ -75,6 +75,7 @@ void NetWorkManager::replyError(QNetworkReply::NetworkError error)
     emit testFaild("NetWorkManager::replyError():QNetworkReply::NetworkError("+QString::number(error)+")");
 #endif
     //TODO:发送get请求失败的信号（Browser应该能够捕获到）
+
 }
 
 void NetWorkManager::get()
@@ -124,11 +125,12 @@ void NetWorkManager::replyFinished(QNetworkReply *reply)
     QString url=host+"/"+path;
 
     //将得到的客户名字和服务器地址以二进制形式存入settings.dat中
-    PlatformSetting t_setting(url,"UICreator");
+    PlatformSetting t_setting(url,"北京城乡新媒体视频内容管理平台");
     QFile file(qApp->applicationDirPath()+"/data/settings.dat");
     if(!file.open(QIODevice::WriteOnly))
     {
         FILE_OPEN_ERROR(file);
+
 
     }
     else

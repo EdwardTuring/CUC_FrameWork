@@ -9,5 +9,7 @@
         <file>logo_webkit.png</file>
         <file>logo_cuc.jpg</file>
         <file>startup_ui.png</file>
+        <file>startup.png</file>
+        <file>icon.png</file>
     </qresource>
 </RCC>

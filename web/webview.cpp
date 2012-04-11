@@ -19,8 +19,8 @@ WebView::WebView(QWidget *parent) :
     this->page()->settings()->setAttribute(QWebSettings::PluginsEnabled,true);
 
 
-     this->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,true);
-       QWebSettings::enablePersistentStorage();
+    // this->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,true);
+      // QWebSettings::enablePersistentStorage();
 
 
    // setContextMenuPolicy (Qt::NoContextMenu);//ÆÁ±ÎÔ­ÓÐÓÒ¼ü²Ëµ¥

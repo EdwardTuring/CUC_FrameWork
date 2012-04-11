@@ -40,13 +40,13 @@ SOURCES =   main.cpp \
     tool.cpp
 RESOURCES = \
     resource/icon.qrc
-TARGET =UICreator_Dev
+TARGET =mm_client
 # install
 target.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
 sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
-INSTALLS += target sources
-CONFIG   += console
+#INSTALLS += target sources
+#CONFIG   += console
 symbian {
     TARGET.UID3 = 0xA000CF6C
     include($$PWD/../../symbianpkgrules.pri)
@@ -59,11 +59,11 @@ OTHER_FILES += \
     README
 RC_FILE = \
       icon.rc
-CONFIG+=console
+#CONFIG+=console
 FORMS += \
     gui/ui/slidewidget.ui \
     gui/ui/repodialog.ui \
     gui/ui/aboutdialog.ui \
     gui/ui/guidedialog.ui
 
-DEFINES+=CUC_DEBUG
+
