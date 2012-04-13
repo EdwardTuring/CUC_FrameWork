@@ -29,24 +29,64 @@ FtpTask::FtpTask()
 
 }
 
+
+inline QDataStream & operator << (QDataStream& stream,
+                                             const FtpTask& task)
+{
+
+    return stream<<task.des_url<<task.filename
+                   <<task.info<<task.post_datas_
+                   <<task.post_data_url_<<task.type
+                   <<task.url;
+}
+inline QDataStream & operator >>(QDataStream& stream,
+                                             FtpTask& task)
+{
+    return stream>>task.des_url>>task.filename
+                   >>task.info>>task.post_datas_
+                   >>task.post_data_url_>>task.type
+                   >>task.url;
+}
+
 TaskManager::TaskManager(QObject *parent):QObject(parent)
 {
     qDebug()<<"TaskManager::TaskManager():TaskManager created";
     this->list_=new QList<FtpTask>;
     //构建存储任务队列的文件对象:
-    QString tmp_path = qApp->applicationDirPath() + "/data/tasks.dat";
-    task_store_file_=new QFile(tmp_path,this);
+    QString tmp_task_path = qApp->applicationDirPath() + "/data/tasks.dat";
+
+    task_store_file_=new QFile(tmp_task_path,this);
+    task_store_file_->open(QIODevice::ReadOnly);
+    QDataStream out(task_store_file_);
+    QList<FtpTask> tmp_tasks_list;
+    out>>tmp_tasks_list;
+    qDebug()<<"TaskManager::TaskManager():从文件中读出的list长度："<<tmp_tasks_list.size();
+    ///qDebug()<<"TaskManager::TaskManager():从文件中读出的list[0].file_name："<<tmp_tasks_list.at(0).filename;
+ ///   qDebug()<<"TaskManager::TaskManager():从文件中读出的list[1].file_name："<<tmp_tasks_list.at(1).filename;
+    task_store_file_->close();
+    connect(this,SIGNAL(taskQueueChanged()),
+            this,SLOT(writeTaskInfoToFile()));
 }
 TaskManager::~TaskManager()
 {
     delete list_;
 }
-void TaskManager::writeTaskInfoToFile(const FtpTask &task)
+void TaskManager::writeTaskInfoToFile()
 {
-    if(!task_store_file_->open(QIODevice::Append))
+    if(!task_store_file_->isOpen())
     {
-        FILE_OPEN_ERROR(task_store_file_);
+        if(!task_store_file_->open(QIODevice::WriteOnly))
+        {
+            FILE_OPEN_ERROR(*task_store_file_);
+            emit fatalError("无法打开文件："+task_store_file_->fileName());
+            return ;
+        }
     }
+    task_store_file_->reset();//注意：重置一下文件指针
+    QDataStream in(task_store_file_);-
+   // qDebug()<<"TaskManager::writeTaskInfoToFile():"<<list_->size();
+    in<<*list_;
+
 }
 
 void TaskManager::addGetTask(const QString &info,const QString &url, const QString &des_url)
@@ -58,6 +98,7 @@ void TaskManager::addGetTask(const QString &info,const QString &url, const QStri
     task_tmp.type=0;
     task_tmp.info=info;
     list_->append(task_tmp);
+    writeTaskInfoToFile();
 
 }
 void TaskManager::addPutTask(const QString &info,
@@ -73,8 +114,9 @@ void TaskManager::addPutTask(const QString &info,
     task_tmp.info=info;
     task_tmp.post_data_url_=post_data_url;
     task_tmp.post_datas_=post_datas;
-     qDebug()<<"TaskManager::addPutTask():datas size:"<<task_tmp.post_datas_.size();
+
     list_->append(task_tmp);
+    writeTaskInfoToFile();
 
 }
 bool TaskManager::isQueueEmpty() const
@@ -92,21 +134,33 @@ FtpTask TaskManager::getTopTask()
 void TaskManager::deleteTask(int i)
 {
      if(!list_->isEmpty())
+     {
         list_->removeAt(i);
+         writeTaskInfoToFile();
+     }
 }
 void TaskManager::finishTask()
 {
     if(!list_->isEmpty())
-        list_->removeFirst();
+    {
+            list_->removeFirst();
+            qDebug()<<"TaskManager::finishTask(): called";
+            writeTaskInfoToFile();
+    }
+
 }
 
 FtpPlugin::FtpPlugin(QObject *parent):QObject(parent)
 {
-    qDebug()<<"已载入ftp模块.";
+
     ftp=new QFtp(this);
 
     manager_=new TaskManager(this);
     data_helper_=new FtpDataHelper(this);
+
+    /*初始化任务状态记录的文件*/
+    QString tmp_saver_path= qApp->applicationDirPath() + "/data/saver";
+    saver_file_=new QFile(tmp_saver_path,this);
 
     /*连接FtpDataHelper的信号槽*/
     connect(data_helper_,SIGNAL(ftpDataFinished(const QString &)),
@@ -117,6 +171,9 @@ FtpPlugin::FtpPlugin(QObject *parent):QObject(parent)
                 this, SLOT(getListInfo(QUrlInfo)));
     connect(ftp, SIGNAL(dataTransferProgress(qint64,qint64)),
         this, SLOT(updateDataTransferProgress(qint64,qint64)));
+    /*连接处理错误消息的信号槽*/
+    connect(manager_,SIGNAL(fatalError(const QString &)),
+            this,SLOT(handleFatalError(const QString &)));
 
     connect(this,SIGNAL(signal_startNextTask()),this,SLOT(slot_startNextTask()));
 }
@@ -130,13 +187,18 @@ void FtpPlugin::postFtpData(const QString &url,
     qDebug()<<"FtpPlugin::postFtpData():called";
     data_helper_->postFtpData(url,tag,dir,filename,filedescription,file_start_put_time,uid);
 }
+void FtpPlugin::handleFatalError(const QString &msg)
+{
+    QMessageBox::warning(NULL,"ftp模块",msg);
+}
+
 void FtpPlugin::postFtpData(const QString &url, const QMap<QString, QVariant> &obj)
 {
      qDebug()<<"FtpPlugin::postFtpData():called";
      QString tags_str;
      if(obj["tags"].type()==QVariant::List)
      {
-         qDebug()<<"FtpPlugin::postFtpData():obj['tags'] is a array";
+
          QList<QVariant> list=obj["tags"].toList();
 
 
@@ -173,7 +235,18 @@ void FtpPlugin::getListInfo(const QUrlInfo &i)
 void FtpPlugin::updateDataTransferProgress(qint64 readBytes, qint64 totalBytes)
 {
     //TODO:向记录文件输出当前的下载比特数，以便使用断点续传
-
+    if(!saver_file_->isOpen())
+    {
+        if(!saver_file_->open(QIODevice::WriteOnly))
+        {
+            FILE_OPEN_ERROR(*saver_file_);
+         //   handleFatalError("无法打开文件："+saver_file_->fileName());
+            return;
+        }
+    }
+    saver_file_->reset();
+    QDataStream in(saver_file_);
+    in<<readBytes;
     emit dataTransferProgress(QString::number(readBytes),QString::number(totalBytes));
 }
 
@@ -205,7 +278,7 @@ int FtpPlugin::connectToHost(const QString &host, QString port)
 }
 int FtpPlugin::login(const QString &user, const QString &password)
 {
-    qDebug()<<"login:用户 "+user+"正在登陆...";
+    qDebug()<<"login:用户 "<<user<<"正在登陆...";
      if(ftp->state()!=QFtp::LoggedIn) return ftp->login(user,password);
 }
 int FtpPlugin::list(const QString &dir)
@@ -222,13 +295,13 @@ int FtpPlugin::get(const QString &srcfileName,const QString &fileName)
 
     qDebug()<<b;
     if (!b) {
-        qDebug()<<"无法保存文件 "+fileName;
+        qDebug()<<"无法保存文件 "<<fileName;
         delete file_;
         return -1;
     }
-     qDebug()<<"get:正在下载 "+srcfileName+" 到目录 "+fileName;
+     qDebug()<<"get:正在下载 "<<srcfileName<<" 到目录 "<<fileName;
     int state= ftp->get(QString::fromLatin1((srcfileName).toUtf8()), file_);
-     qDebug()<<"ftp.get 序列："+QString::number(state);
+     qDebug()<<"ftp.get 序列："<<QString::number(state);
 
      return state;
 
@@ -265,14 +338,14 @@ void FtpPlugin::addPutTask(const QString &data_url,
                 const QString &url,
                 const QString &file_name)
 {
-    qDebug()<<"FtpPlugin::addPutTask():called";
+   // qDebug()<<"FtpPlugin::addPutTask():called";
 
     if(manager_->isQueueEmpty())
     {
         this->put(url,file_name);
     }
 
-    qDebug()<<"FtpPlugin::addPutTask():datas size:"<<datas.size();
+ //   qDebug()<<"FtpPlugin::addPutTask():datas size:"<<datas.size();
     //向任务管理器加入任务信息(info暂时留空吧，也用不着)
     manager_->addPutTask(" ",data_url,datas,url,file_name);
 }

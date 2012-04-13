@@ -56,7 +56,7 @@ int main(int argc, char * argv[])
           ftp.addPutTask("http://localhost/ftp_client/index.php/welcome/addtag",obj2,
                          "F:/temp/新闻发布系统视频/rtfg.mp4","rtfg.mp4");
           ftp.addPutTask("http://localhost/ftp_client/index.php/welcome/addtag",obj2,
-                         "F:/temp/新闻发布系统视频/nanpai.flv","nanpai.flv");
+                         "F:/cn_office_professional_plus_2007_dvd_with_sp2_updated_to_2011-04-30.iso","cn_office_professional_plus_2007_dvd_with_sp2_updated_to_2011-04-30.flv");
     return app.exec();
 }
 

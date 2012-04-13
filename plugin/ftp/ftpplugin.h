@@ -5,28 +5,40 @@
 #include <QFtp>
 #include "ftpdatahelper.h"
 #include "../CUCplugininterface.h"
-#include "../qt4.h"
+#include "../core/coreerror.h"
+
+
 /*
 *   FtpTask 单个的ftp上、下传任务的类。
 */
+
+
 class FtpTask
 {
 public:
     QString filename;
-    QString des_url;
-    QString url;
+    QString des_url;//下载时用到
+    QString url; //ftp服务器上文件的url
     QString info;//!important:用于传递信息
     int type;//type:0=>get,1=>put
-    //拷贝构造函数
+
 
     /*下面的两个变量用于存放post的信息*/
     QString post_data_url_;
     QMap<QString,QVariant> post_datas_;
-
+     //拷贝构造函数
     FtpTask(const FtpTask &other);
     FtpTask();
     ~FtpTask();
 };
+/**
+  两个运算符重载函数 处理FtpTask类的输入输出流。
+  @date 2012.4.13
+*/
+
+   QDataStream & operator<< (QDataStream& stream, const FtpTask& task);
+   QDataStream & operator>> (QDataStream& stream, FtpTask& task);
+
 
 /*
 * TaskManager 类用于管理ftp批量上、下传任务。此类对象应该是
@@ -52,8 +64,15 @@ public:
     /*获取队列顶端的task*/
     FtpTask getTopTask();
     bool isQueueEmpty() const;
-private:
-    void writeTaskInfoToFile(const FtpTask &);
+signals:
+    void fatalError(const QString &);
+    void taskQueueChanged();
+private slots:
+   /**
+     writeTaskInfoToFile 每次任务队列改变的时候调用此接口,
+     用于记录任务队列。
+    */
+    void writeTaskInfoToFile();
 private:
 
     QFile *task_store_file_;
@@ -140,18 +159,23 @@ private slots:
     slot_ftpDataFinished 这个槽做两件事情：
     1、开启任务管理器里的下一次任务。
     2、再次发送一个http post完成的信号，javaScript部分应该能够捕捉到此信号，并作出相因的处理
-    @author Ma Xiao(mxturing@yeah.net)
+
     @date 2012.4.5
     */
     void slot_ftpDataFinished(const QString &msg);
     /**
     slot_startNextTask 当上一次的任务完成的时候，检查是否为put类型；
     若是，则触发post任务。
-    @author Ma Xiao(mxturing@yeah.net)
+
     @date 2012.4.5
     */
     void slot_startNextTask();
 
+    /**
+    handleFatalError 处理致命错误的槽
+   @date 2012.4.13
+    */
+    void handleFatalError(const QString &);
 private://私有成员函数：
     /*开始下一个任务*/
     void startNextTask();
@@ -159,6 +183,8 @@ private://私有成员函数：
 private:
     QFtp *ftp;
     QFile *file_;
+    QFile *saver_file_;//记录当前任务的进度，断点续传使用
+
 
     QString uploadfilename_;
     QString host_;
