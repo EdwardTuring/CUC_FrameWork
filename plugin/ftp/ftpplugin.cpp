@@ -9,7 +9,14 @@ FtpTask::FtpTask(const FtpTask &other)
     this->type=other.type;
     this->filename=other.filename;
     this->info=other.info;
+    this->post_data_url_=other.post_data_url_;
+    this->post_datas_=other.post_datas_;
 }
+FtpTask::~FtpTask()
+{
+
+}
+
 FtpTask::FtpTask()
 {
     url="";
@@ -17,6 +24,8 @@ FtpTask::FtpTask()
     filename="";
     type=0;
     info="";
+    post_data_url_="";
+
 
 }
 
@@ -24,10 +33,20 @@ TaskManager::TaskManager(QObject *parent):QObject(parent)
 {
     qDebug()<<"TaskManager::TaskManager():TaskManager created";
     this->list_=new QList<FtpTask>;
+    //构建存储任务队列的文件对象:
+    QString tmp_path = qApp->applicationDirPath() + "/data/tasks.dat";
+    task_store_file_=new QFile(tmp_path,this);
 }
 TaskManager::~TaskManager()
 {
     delete list_;
+}
+void TaskManager::writeTaskInfoToFile(const FtpTask &task)
+{
+    if(!task_store_file_->open(QIODevice::Append))
+    {
+        FILE_OPEN_ERROR(task_store_file_);
+    }
 }
 
 void TaskManager::addGetTask(const QString &info,const QString &url, const QString &des_url)
@@ -41,7 +60,10 @@ void TaskManager::addGetTask(const QString &info,const QString &url, const QStri
     list_->append(task_tmp);
 
 }
-void TaskManager::addPutTask(const QString &info,const QString &url, const QString &file_name)
+void TaskManager::addPutTask(const QString &info,
+                             const QString &post_data_url,
+                             const QMap<QString,QVariant> &post_datas,
+                             const QString &url, const QString &file_name)
 {
    qDebug()<<"TaskManager::addPutTask():called";
     FtpTask task_tmp;
@@ -49,6 +71,9 @@ void TaskManager::addPutTask(const QString &info,const QString &url, const QStri
     task_tmp.url=url;
     task_tmp.type=1;
     task_tmp.info=info;
+    task_tmp.post_data_url_=post_data_url;
+    task_tmp.post_datas_=post_datas;
+     qDebug()<<"TaskManager::addPutTask():datas size:"<<task_tmp.post_datas_.size();
     list_->append(task_tmp);
 
 }
@@ -81,15 +106,63 @@ FtpPlugin::FtpPlugin(QObject *parent):QObject(parent)
     ftp=new QFtp(this);
 
     manager_=new TaskManager(this);
+    data_helper_=new FtpDataHelper(this);
 
+    /*连接FtpDataHelper的信号槽*/
+    connect(data_helper_,SIGNAL(ftpDataFinished(const QString &)),
+            this,SLOT(slot_ftpDataFinished(const QString &)));
     connect(ftp, SIGNAL(commandFinished(int,bool)),
                 this, SLOT(ftpCommandFinished(int,bool)));
     connect(ftp, SIGNAL(listInfo(QUrlInfo)),
                 this, SLOT(getListInfo(QUrlInfo)));
     connect(ftp, SIGNAL(dataTransferProgress(qint64,qint64)),
         this, SLOT(updateDataTransferProgress(qint64,qint64)));
-    connect(this,SIGNAL(signal_startNextTask()),this,SLOT(startNextTask()));
+
+    connect(this,SIGNAL(signal_startNextTask()),this,SLOT(slot_startNextTask()));
 }
+
+void FtpPlugin::postFtpData(const QString &url,
+                        const QString &tag,
+                        const QString &dir,
+                        const QString &filename,
+                        const QString &filedescription, const QString &file_start_put_time,const QString &uid)
+{
+    qDebug()<<"FtpPlugin::postFtpData():called";
+    data_helper_->postFtpData(url,tag,dir,filename,filedescription,file_start_put_time,uid);
+}
+void FtpPlugin::postFtpData(const QString &url, const QMap<QString, QVariant> &obj)
+{
+     qDebug()<<"FtpPlugin::postFtpData():called";
+     QString tags_str;
+     if(obj["tags"].type()==QVariant::List)
+     {
+         qDebug()<<"FtpPlugin::postFtpData():obj['tags'] is a array";
+         QList<QVariant> list=obj["tags"].toList();
+
+
+         data_helper_->postFtpData(url,
+                                    list,
+                                   obj["dir"].toString(),
+                                   obj["filename"].toString(),
+                                   obj["filedescription"].toString(),
+                                   obj["file_start_put_time"].toString(),
+                                   obj["uid"].toString());
+     }
+     else
+     {
+
+         data_helper_->postFtpData(url,
+                                     obj["tags"].toString(),
+                                   obj["dir"].toString(),
+                                   obj["filename"].toString(),
+                                   obj["filedescription"].toString(),
+                                   obj["file_start_put_time"].toString(),
+                                   obj["uid"].toString());
+     }
+
+
+}
+
 void FtpPlugin::getListInfo(const QUrlInfo &i)
 {
     qDebug()<<"getListInfo works";
@@ -99,6 +172,8 @@ void FtpPlugin::getListInfo(const QUrlInfo &i)
 
 void FtpPlugin::updateDataTransferProgress(qint64 readBytes, qint64 totalBytes)
 {
+    //TODO:向记录文件输出当前的下载比特数，以便使用断点续传
+
     emit dataTransferProgress(QString::number(readBytes),QString::number(totalBytes));
 }
 
@@ -122,7 +197,11 @@ int FtpPlugin::connectToHost(const QString &host, QString port)
 {
 
     qDebug()<<"connect:正在连接到 "+host+",端口号："<<(unsigned short)(port.toInt());
-    if(ftp->state()==QFtp::Unconnected) return ftp->connectToHost(host,( unsigned short)(port.toInt()));
+    if(ftp->state()==QFtp::Unconnected)
+    {
+        ftp->setTransferMode(QFtp::Active);
+        return ftp->connectToHost(host,( unsigned short)(port.toInt()));
+    }
 }
 int FtpPlugin::login(const QString &user, const QString &password)
 {
@@ -149,7 +228,7 @@ int FtpPlugin::get(const QString &srcfileName,const QString &fileName)
     }
      qDebug()<<"get:正在下载 "+srcfileName+" 到目录 "+fileName;
     int state= ftp->get(QString::fromLatin1((srcfileName).toUtf8()), file_);
-     qDebug()<<"ftp.get 返回的状态："+QString::number(state);
+     qDebug()<<"ftp.get 序列："+QString::number(state);
 
      return state;
 
@@ -165,7 +244,7 @@ int FtpPlugin::put(const QString &choosed_files_dir_,const QString file_name)
     int state=ftp->put(remoteFileName,QString::fromLatin1(file_name.toUtf8()));
 
     remoteFileName->close();
-    qDebug()<<"ftp.put 返回的状态："+QString::number(state);
+    qDebug()<<"ftp.put 序列："+QString::number(state);
 
     return state;
 
@@ -181,7 +260,10 @@ void FtpPlugin::addGetTask(const QString &info,const QString &url, const QString
     }
     manager_->addGetTask(info,url,des_url);
 }
-void FtpPlugin::addPutTask(const QString &info, const QString &url, const QString &file_name)
+void FtpPlugin::addPutTask(const QString &data_url,
+                const QMap<QString,QVariant> &datas,
+                const QString &url,
+                const QString &file_name)
 {
     qDebug()<<"FtpPlugin::addPutTask():called";
 
@@ -189,7 +271,10 @@ void FtpPlugin::addPutTask(const QString &info, const QString &url, const QStrin
     {
         this->put(url,file_name);
     }
-     manager_->addPutTask(info,url,file_name);
+
+    qDebug()<<"FtpPlugin::addPutTask():datas size:"<<datas.size();
+    //向任务管理器加入任务信息(info暂时留空吧，也用不着)
+    manager_->addPutTask(" ",data_url,datas,url,file_name);
 }
 bool FtpPlugin::isQueueEmpty()
 {
@@ -214,14 +299,14 @@ int FtpPlugin::put(const QString &choosed_files_dir_)
     int state=ftp->put(remoteFileName,QString::fromLatin1(fileName.toUtf8()));
 
     remoteFileName->close();
-    qDebug()<<"ftp.put 返回的状态："+QString::number(state);
+    qDebug()<<"ftp.put 序列："+QString::number(state);
 
     return state;
 
 }
 int FtpPlugin::cd(const QString &dir)
 {
-    qDebug()<<"cd:正在返回上一级目录...";
+    qDebug()<<"cd:正在改变目录...";
 
     return ftp->cd( QString::fromLatin1(dir.toUtf8()));
 }
@@ -254,6 +339,7 @@ void FtpPlugin::ftpCommandFinished(int, bool error)
             return;
         }
         qDebug()<<"已登录";
+        ftp->list();
 
 
 }
@@ -284,7 +370,7 @@ void FtpPlugin::ftpCommandFinished(int, bool error)
     }
     else if (ftp->currentCommand() == QFtp::List)
     {
-        //待补充
+        emit listFinished();
     }
     else if(ftp->currentCommand()==QFtp::Put)
     {
@@ -326,6 +412,30 @@ void FtpPlugin::ftpCommandFinished(int, bool error)
 
     }
 }
+void FtpPlugin::slot_startNextTask()
+{
+    qDebug()<<"FtpPlugin::slot_startNextTask()：called";
+    if(!manager_->isQueueEmpty()){
+        FtpTask tmp=manager_->getTopTask();
+         qDebug()<<"FtpPlugin::slot_startNextTask():data url: "<<tmp.post_data_url_;
+         qDebug()<<"FtpPlugin::slot_startNextTask():data size "<<tmp.post_datas_.size();
+          if(tmp.type==1)
+          {
+              //如果是put型的话
+              this->postFtpData(tmp.post_data_url_,tmp.post_datas_);
+          }
+          else if(tmp.type==0)
+          {
+              //如果是get型，则直接开始下次任务
+              this->startNextTask();
+          }
+    }
+    else
+    {
+            qDebug()<<"FtpPlugin::slot_startNextTask():任务队列为空";
+    }
+}
+
 void FtpPlugin::startNextTask()
 {
     qDebug()<<" FtpPlugin::startNextTask()：called";
@@ -344,14 +454,28 @@ void FtpPlugin::startNextTask()
         else if(tmp.type==1)
         {
             //开始put任务
+
             put(tmp.url,tmp.filename);
         }
     }
     else
     {
-       // ftp->close();
+        qDebug()<<"FtpPlugin::startNextTask()：任务队列空";
     }
 
+}
+void FtpPlugin::slot_ftpDataFinished(const QString &msg)
+{
+
+    qDebug()<<"FtpPlugin::slot_ftpDataFinished :called";
+
+    /*post完成了，可以开始下次任务:)*/
+    this->startNextTask();
+    /*具体的操作应该交给javascript层去处理，所以这里只是简单地
+      转发了FtpDataHelper类的信号。而javascript层则负责去捕捉着这个
+      信号（signal_PostDataFinished）。
+    */
+    emit signal_PostDataFinished(msg);
 }
 
 int FtpPlugin::mkdir(const QString &foldername)
