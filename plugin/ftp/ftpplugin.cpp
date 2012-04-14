@@ -57,13 +57,17 @@ TaskManager::TaskManager(QObject *parent):QObject(parent)
 
     task_store_file_=new QFile(tmp_task_path,this);
     task_store_file_->open(QIODevice::ReadOnly);
+
     QDataStream out(task_store_file_);
     QList<FtpTask> tmp_tasks_list;
     out>>tmp_tasks_list;
-    qDebug()<<"TaskManager::TaskManager():从文件中读出的list长度："<<tmp_tasks_list.size();
-    ///qDebug()<<"TaskManager::TaskManager():从文件中读出的list[0].file_name："<<tmp_tasks_list.at(0).filename;
- ///   qDebug()<<"TaskManager::TaskManager():从文件中读出的list[1].file_name："<<tmp_tasks_list.at(1).filename;
+    //下面列出上次未完成的列表：
+    for(int i=0;i<tmp_tasks_list.size();i++)
+    {
+
+    }
     task_store_file_->close();
+
     connect(this,SIGNAL(taskQueueChanged()),
             this,SLOT(writeTaskInfoToFile()));
 }
@@ -83,10 +87,18 @@ void TaskManager::writeTaskInfoToFile()
         }
     }
     task_store_file_->reset();//注意：重置一下文件指针
-    QDataStream in(task_store_file_);-
-   // qDebug()<<"TaskManager::writeTaskInfoToFile():"<<list_->size();
-    in<<*list_;
 
+    QDataStream in(task_store_file_);
+   // qDebug()<<"TaskManager::writeTaskInfoToFile():"<<list_->size();
+    if(!list_->isEmpty())
+        in<<*list_;
+    else
+    {
+
+        QList<FtpTask> tmp_list;
+        in<<tmp_list;
+    }
+    this->task_store_file_->close();
 }
 
 void TaskManager::addGetTask(const QString &info,const QString &url, const QString &des_url)
@@ -161,6 +173,15 @@ FtpPlugin::FtpPlugin(QObject *parent):QObject(parent)
     /*初始化任务状态记录的文件*/
     QString tmp_saver_path= qApp->applicationDirPath() + "/data/saver";
     saver_file_=new QFile(tmp_saver_path,this);
+
+//测试任务状态记录：
+    saver_file_->open(QIODevice::ReadOnly);
+    QDataStream out(saver_file_);
+    qint64 tmp_num;
+    out>>tmp_num;
+    saver_file_->close();
+    qDebug()<<"上一次下载到："<<tmp_num;
+
 
     /*连接FtpDataHelper的信号槽*/
     connect(data_helper_,SIGNAL(ftpDataFinished(const QString &)),
@@ -431,6 +452,7 @@ void FtpPlugin::ftpCommandFinished(int, bool error)
 
             //先取出上次的附带信息（info），然后发送出去
             QString info=manager_->getTopTask().info;
+
             emit getFinished(info);
             /*开始下一个任务，如果还有的话；*/
             emit signal_startNextTask();
@@ -533,6 +555,22 @@ void FtpPlugin::startNextTask()
     }
     else
     {
+        //现在所有的任务完成了，可以向saver_file_中写入“0”了，并
+        //关闭文件
+        if(!saver_file_->isOpen())
+        {
+            if(!saver_file_->open(QIODevice::WriteOnly))
+            {
+                FILE_OPEN_ERROR(*saver_file_);
+             //   handleFatalError("无法打开文件："+saver_file_->fileName());
+                return;
+            }
+        }
+        qDebug()<<saver_file_->reset();
+        QDataStream in(saver_file_);
+        in<<qint64(0);
+       saver_file_->close();
+
         qDebug()<<"FtpPlugin::startNextTask()：任务队列空";
     }
 
