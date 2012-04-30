@@ -15,15 +15,12 @@ WebView::WebView(QWidget *parent) :
     inspector_=new QWebInspector();
     inspector_->setPage(page_);
     this->page()->settings()->setAttribute(QWebSettings::JavascriptCanOpenWindows,true);
-
     this->page()->settings()->setAttribute(QWebSettings::PluginsEnabled,true);
 
-
-    // this->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,true);
-      // QWebSettings::enablePersistentStorage();
-
-
-   // setContextMenuPolicy (Qt::NoContextMenu);//ÆÁ±ÎÔ­ÓÐÓÒ¼ü²Ëµ¥
+    #ifdef _CUC_DEBUG_
+    this->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,true);
+    QWebSettings::enablePersistentStorage();
+    #endif
 }
 QWebInspector *WebView::getInspector() const
 {

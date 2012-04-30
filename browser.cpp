@@ -20,13 +20,7 @@ Browser::Browser(QObject *parent) :
     splash_ = new SplashScreen(pixmap);
     qApp->processEvents();
     splash_->show();
-
-
-
-
-
-
-    this->browser_=new MainWindow(url_,title_);
+   this->browser_=new MainWindow(url_,title_);
     browser_->setWindowIcon(QIcon(":icon.png"));
 
     if(this->ismaxsize_)
@@ -72,6 +66,8 @@ void Browser::handleConnectEvents()
 
     CONNECT(this->browser_->view()->page(),loadFinished(bool),this,startTimeCount());
     CONNECT(this->time_openwindow_,timeout(),this,finishLoad());
+
+    CONNECT(this->browser_,hideMe(),this,hideMainWindow());
 }
 
 void Browser::handleConfig()
@@ -169,6 +165,7 @@ void Browser::finishLoad()
     }
     this->show();
 
+    this->time_openwindow_->stop();
     // connectToPluginRepository(); //当载入画面完成之后，进行插件仓库的连接
 
 

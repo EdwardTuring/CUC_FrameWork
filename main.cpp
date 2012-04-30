@@ -44,6 +44,8 @@ int main(int argc, char * argv[])
 Tst_NetWorkManager tn;
 #else
    Browser b;
+
+
 #endif
     return app.exec();
 }

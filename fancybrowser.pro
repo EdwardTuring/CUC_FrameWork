@@ -41,25 +41,17 @@ SOURCES =   main.cpp \
 RESOURCES = \
     resource/icon.qrc
 TARGET =mm_client
-# install
 target.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
 sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro
 sources.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
 #INSTALLS += target sources
 #CONFIG   += console
-symbian {
-    TARGET.UID3 = 0xA000CF6C
-    include($$PWD/../../symbianpkgrules.pri)
-    TARGET.CAPABILITY = NetworkServices
-}
-maemo5: include($$PWD/../../maemo5pkgrules.pri)
-
+#DEFINES += _CUC_DEBUG_
 OTHER_FILES += \
     icon.rc \
     README
 RC_FILE = \
       icon.rc
-#CONFIG+=console
 FORMS += \
     gui/ui/slidewidget.ui \
     gui/ui/repodialog.ui \

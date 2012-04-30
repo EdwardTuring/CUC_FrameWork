@@ -3,9 +3,11 @@
 
 
 #include <QtGui>
- #include <QKeyEvent>
+#include <QKeyEvent>
 #include <QAction>
 #include <QShortcut>
+#include <QSystemTrayIcon>
+#include <QMenu>
 #include "qt4.h"
 #include "web/webview.h"
 #include "gui/ui/slidewidget.h"
@@ -34,11 +36,11 @@ public:
     QVector<UIC::PopupWindow *> *getPopWindows(){return this->popwindows_;}
 public slots:
 
- signals:
+signals:
     void MaxSizeChanged();
     void sizeChanged();
     void posChanged();
-
+    void hideMe();
 protected:
     void setActionsAndShortCuts();
     void changeEvent(QEvent *event);
@@ -62,22 +64,33 @@ protected:
     QSize normalsize_;
     bool ismaxsize_; //在全屏前是否为最大化状态
     QPoint window_pos_;
+private slots:
+    void quit();
 
+private://私有的成员函数：
+    void initSystemTrayIcon();
+    void initTrayIconAction();
 
 private:
     QRect availableGeometry;
 
-     QShortcut  *sht_fullscreen_;
-     QShortcut  *sht_reload_;
-     QShortcut *sht_normalscreen_;
-      QShortcut *sht_inspector_;
-        QMainWindow *wnd_inspector_;
-     QMap<QString ,UIC::PopupWindow*> *childwnd_;
+    QShortcut  *sht_fullscreen_;
+    QShortcut  *sht_reload_;
+    QShortcut *sht_normalscreen_;
+    QShortcut *sht_inspector_;
+    QMainWindow *wnd_inspector_;
+    QMap<QString ,UIC::PopupWindow*> *childwnd_;
     QVector<UIC::PopupWindow*> *popwindows_;
-     //child window:
+    //child window:
+    /*slidewidget_已经废弃*/
     SlideWidget *slidewidget_;
 
-
+    /*下面两个对像用于处理托盘图标*/
+    QSystemTrayIcon *tray_icon_;
+    QMenu *tray_icon_menu_;
+    QAction *act_show_normal_;
+    QAction *act_quit_;
+    QAction *act_full_screen_;
 
 
 };

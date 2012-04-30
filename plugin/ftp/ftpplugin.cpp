@@ -765,6 +765,7 @@ void FtpPlugin::slot_startNextTask()
     else
     {
         qDebug()<<"FtpPlugin::slot_startNextTask():任务队列为空";
+
     }
 }
 
@@ -810,6 +811,7 @@ void FtpPlugin::startNextTask()
     {
 
         qDebug()<<"FtpPlugin::startNextTask()：任务队列空";
+        emit AllTaskFinished();
     }
 
 }

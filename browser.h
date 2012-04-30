@@ -19,13 +19,16 @@ public:
     QString title(){return title_;}
     QString url(){return url_;}
     MainWindow *getMainWindow(){return browser_;}
-    void show(){this->browser_->show();}
+     void show(){this->browser_->show();}
     void setSplashScreen(UIC::SplashScreen *splash){splash_=splash;}
     UIC::SplashScreen *getSplashScreen(){return splash_;}
 
     void connectToPluginRepository();
 public slots:
     void closeChildWindow(QWidget *);
+
+     void showMainWindow(){this->browser_->show();}
+    void hideMainWindow(){this->browser_->hide();}
 protected slots:
     void finishLoad();
     void startTimeCount();

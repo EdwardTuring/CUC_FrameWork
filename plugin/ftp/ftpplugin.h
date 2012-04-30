@@ -215,6 +215,7 @@ signals:
                               bool is_first_task=false);
 
     void checkUnfinishedTaskOver();
+    void AllTaskFinished();
 private slots:
 
     /**
