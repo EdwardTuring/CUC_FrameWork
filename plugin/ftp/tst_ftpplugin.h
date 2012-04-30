@@ -14,6 +14,13 @@ signals:
     
 public slots:
     void slot_getfinished(const QString &info);
+    void slot_hasGetTaskUnfinished(const QString &info,const QString &url, const QString &des_url);
+    void slot_hasPutTaskUnfinished(const QString &data_url,
+                              const QMap<QString,QVariant> &datas,
+                              const QString &url,
+                              const QString &file_name);
+private:
+    FtpPlugin *ftpplugin_;
 };
 
 #endif // TST_FTPPLUGIN_H

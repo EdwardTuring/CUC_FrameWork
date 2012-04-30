@@ -1,12 +1,12 @@
-#TEMPLATE = lib
-#CONFIG += plugin
-CONFIG +=console
+TEMPLATE = lib
+CONFIG += plugin
+#CONFIG +=console
 
 INCLUDEPATH += .. # "指定特殊的include path"
 TARGET += ftp # "特别注意这里"
 DEPENDPATH += .
 INCLUDEPATH += .
-QT          +=network
+QT          +=network sql
 HEADERS += \
     ftpplugin.h \
     tst_ftpplugin.h \
@@ -19,4 +19,4 @@ SOURCES += \
     tst_ftpplugin.cpp \
     ftpdatahelper.cpp \
     tst_ftpdatahelper.cpp
-DEFINES+=CUC_TEST
+#DEFINES+=CUC_TEST
