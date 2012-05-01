@@ -18,6 +18,12 @@ public slots:
     void close();
     void closeChildWindow(const QString title);
     QString getChildWindow();
+    /**
+    prompt:在托盘上显示提示信息
+    */
+    void prompt(const QString &title,
+                const QString &msg,
+                int time_to_close);
 
     void showAboutDialog(const QString &msg="这是关于...");
 private:

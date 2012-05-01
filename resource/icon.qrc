@@ -11,5 +11,7 @@
         <file>startup_ui.png</file>
         <file>startup.png</file>
         <file>icon.png</file>
+        <file>icon/icon_exit.png</file>
+        <file>icon/icon_showwindow.png</file>
     </qresource>
 </RCC>

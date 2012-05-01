@@ -11,14 +11,18 @@ MainWindow::MainWindow(const QUrl& url,const QString &_title,QWidget *parent):QM
 {
     progress_ = 0;
     title_=_title;
+#ifdef _CUC_DEBUG_
     wnd_inspector_=NULL;
+#endif
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     view_ = new WebView(this);
     view_->load(url);
     popwindows_=new QVector<UIC::PopupWindow *>();
+
     initSystemTrayIcon();//初始化托盘图标
     setActionsAndShortCuts();
+
     connect(view_, SIGNAL(titleChanged(QString)), SLOT(adjustTitle()));
     connect(view_, SIGNAL(loadProgress(int)), SLOT(setProgress(int)));
 
@@ -50,27 +54,71 @@ void MainWindow::initSystemTrayIcon()
     tray_icon_ = new QSystemTrayIcon(this);
     QIcon icon(":/icon.png");
     tray_icon_->setIcon(icon);
-    initTrayIconAction();
+
     tray_icon_menu_ = new QMenu(this);
-    tray_icon_menu_->addAction(act_show_normal_);
-    tray_icon_menu_->addAction(act_full_screen_);
-     tray_icon_menu_->addAction(act_quit_);
+
+   tray_icon_menu_->addAction(QIcon(":icon/icon_showwindow.png"),
+                                "显示主界面",
+                                this,SLOT(toNormalScreen()));
+   // tray_icon_menu_->addAction(act_full_screen_);
+     tray_icon_menu_->addSeparator();
+  tray_icon_menu_->addAction(QIcon(":icon/icon_exit.png"),
+                                "退出",
+                                this,SLOT(quit()));
+
+
      tray_icon_->setContextMenu(tray_icon_menu_);
 
+     connect(tray_icon_, SIGNAL(messageClicked()), this, SLOT(trayIcon_messageClicked()));
+     connect(tray_icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+             this, SLOT(trayIcon_iconActivated(QSystemTrayIcon::ActivationReason)));
+
 }
-void MainWindow::initTrayIconAction()
+void MainWindow::trayIcon_messageClicked()
 {
-    act_show_normal_ = new QAction("显示窗口",this);
-    act_quit_ = new QAction("退出程序",this);
-    act_full_screen_ =new QAction("全屏显示",this);
-    CONNECT(act_show_normal_ ,triggered(),this,toNormalScreen());
-    CONNECT(act_quit_ ,triggered(),this,quit());
-    CONNECT(act_full_screen_ ,triggered(),this,toFullScreen());
+    //TODO
 }
+void MainWindow::trayIcon_iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+        if(!isActiveWindow())
+        {
+            activateWindow();
+        }
+        break;
+    case QSystemTrayIcon::DoubleClick:
+        if(isVisible())
+        {
+            hide();
+        }
+        else
+        {
+            show();
+        }
+        break;
+    case QSystemTrayIcon::MiddleClick:
+
+        break;
+    default:
+        ;
+    }
+}
+
+void MainWindow::showTrayIconMessage(const QString &title,
+                                     const QString &msg,
+                                     int time_to_close)
+{
+    tray_icon_->showMessage(title,msg,QSystemTrayIcon::Information,time_to_close);
+}
+
 void MainWindow::quit()
 {
     if(confirm("确定退出吗？"))
+    {
+        tray_icon_->hide();
         QApplication::exit();
+    }
 }
 
 void MainWindow::adjustTitle()
@@ -215,7 +263,7 @@ void MainWindow::setTitle(const QString title)
     this->title_=title;
 
 }
-
+#ifdef _CUC_DEBUG_
 void MainWindow::showInspector()
 {
     if(wnd_inspector_==NULL)
@@ -226,4 +274,5 @@ void MainWindow::showInspector()
     wnd_inspector_->resize(800,600);
     wnd_inspector_->show();
 }
+#endif
 }//namespace UIC

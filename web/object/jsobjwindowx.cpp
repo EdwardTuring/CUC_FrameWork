@@ -50,6 +50,11 @@ void JSOBJWindowx::closeChildWindow(const QString title)
 {
 
 }
+void JSOBJWindowx::prompt(const QString &title, const QString &msg, int time_to_close)
+{
+    BROWSER->getMainWindow()->showTrayIconMessage(title,msg,time_to_close);
+}
+
 void JSOBJWindowx::showAboutDialog(const QString &msg)
 {
 

@@ -35,7 +35,9 @@ public:
     void debug(){qDebug()<<"works \n";}
     QVector<UIC::PopupWindow *> *getPopWindows(){return this->popwindows_;}
 public slots:
-
+    void showTrayIconMessage(const QString &,
+                             const QString &,
+                             int );
 signals:
     void MaxSizeChanged();
     void sizeChanged();
@@ -55,8 +57,11 @@ protected slots:
     void setProgress(int p);
     void setMaxSize();
     void toFullOrNormalScreen();
+#ifdef _CUC_DEBUG_
     void showInspector();
-
+#endif
+    void trayIcon_messageClicked();
+    void trayIcon_iconActivated(QSystemTrayIcon::ActivationReason);
 protected:
     WebView *view_;
     QString title_;
@@ -69,7 +74,7 @@ private slots:
 
 private://私有的成员函数：
     void initSystemTrayIcon();
-    void initTrayIconAction();
+
 
 private:
     QRect availableGeometry;
@@ -78,7 +83,9 @@ private:
     QShortcut  *sht_reload_;
     QShortcut *sht_normalscreen_;
     QShortcut *sht_inspector_;
+    #ifdef _CUC_DEBUG_
     QMainWindow *wnd_inspector_;
+   #endif
     QMap<QString ,UIC::PopupWindow*> *childwnd_;
     QVector<UIC::PopupWindow*> *popwindows_;
     //child window:
@@ -88,9 +95,7 @@ private:
     /*下面两个对像用于处理托盘图标*/
     QSystemTrayIcon *tray_icon_;
     QMenu *tray_icon_menu_;
-    QAction *act_show_normal_;
-    QAction *act_quit_;
-    QAction *act_full_screen_;
+
 
 
 };
