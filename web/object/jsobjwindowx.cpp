@@ -54,6 +54,10 @@ void JSOBJWindowx::prompt(const QString &title, const QString &msg, int time_to_
 {
     BROWSER->getMainWindow()->showTrayIconMessage(title,msg,time_to_close);
 }
+void JSOBJWindowx::tooltip(const QString &info)
+{
+     BROWSER->getMainWindow()->setTrayIconTooltip(info);
+}
 
 void JSOBJWindowx::showAboutDialog(const QString &msg)
 {

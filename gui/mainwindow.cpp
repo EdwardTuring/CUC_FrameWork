@@ -73,6 +73,7 @@ void MainWindow::initSystemTrayIcon()
      connect(tray_icon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
              this, SLOT(trayIcon_iconActivated(QSystemTrayIcon::ActivationReason)));
 
+     setTrayIconTooltip("双击显示/隐藏主界面");
 }
 void MainWindow::trayIcon_messageClicked()
 {
@@ -110,6 +111,10 @@ void MainWindow::showTrayIconMessage(const QString &title,
                                      int time_to_close)
 {
     tray_icon_->showMessage(title,msg,QSystemTrayIcon::Information,time_to_close);
+}
+void MainWindow::setTrayIconTooltip(const QString &info)
+{
+    tray_icon_ ->setToolTip(info);
 }
 
 void MainWindow::quit()

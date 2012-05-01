@@ -38,6 +38,7 @@ public slots:
     void showTrayIconMessage(const QString &,
                              const QString &,
                              int );
+    void setTrayIconTooltip(const QString &);
 signals:
     void MaxSizeChanged();
     void sizeChanged();

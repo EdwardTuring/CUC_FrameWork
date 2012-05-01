@@ -25,6 +25,7 @@ public slots:
                 const QString &msg,
                 int time_to_close);
 
+    void tooltip(const QString &info);
     void showAboutDialog(const QString &msg="这是关于...");
 private:
     QWidget *parent_;
