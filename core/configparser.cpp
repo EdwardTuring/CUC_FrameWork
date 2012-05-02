@@ -107,4 +107,29 @@ bool ConfigParser::parserConfigFile()
     }
 
 #endif
+    QString ConfigParser::getSettingsHostUrl()
+    {
+        QFile file(qApp->applicationDirPath()+"/data/settings.dat");
+        if(!file.exists())
+        {
+
+            //若文件不存在，则返回false
+            return "";
+
+        }
+        else if(!file.open(QIODevice::ReadOnly))
+        {
+            FILE_OPEN_ERROR(file);
+
+            return "";
+        }
+        else
+        {
+            QDataStream in(&file);
+            QString host_url;
+            in>>host_url;
+            file.close();
+            return host_url;
+        }
+    }
 }//namespace CUCCore

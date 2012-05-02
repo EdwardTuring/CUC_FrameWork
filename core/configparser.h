@@ -49,6 +49,8 @@ public:
     ConfigParser(QObject *parent=0);
     PlatformSetting *getPlatformSetting()   const{return setting_;}
 
+    static QString getSettingsHostUrl();
+
     enum  parserError
     {
 
