@@ -20,20 +20,28 @@ public:
     {
         LoginInFtpServerFailed = 0,
         DownloadPatchFileFailed,
-        CompressPatchFileFailed
+        ExtractPatchFileFailed,
+        BadPatchFile,
+        InstallPatchFiled
     };
     enum UpdateState
     {
         ConnectingToServer = 0,
-        ConnectedToServer
+        ConnectedToServer,
+        DownloadingPatch,
+        DownloadPatchFinished,
+        InstallingPatch,
+        CleaningPatchFiles,
+        UpdateFinished
     };
       void downloadPatch();
 signals:
     void fateError(const QString &);
-    void downloading(qint64,qint64);
-    void compressPatchFileStatus(bool);
-    void errorOccurred(Updater::UpdateError);
-    void updateStateChanged(Updater::UpdateState);
+
+    void downloading(int);
+    void extractPatchFileStatus(bool);
+    void errorOccurred(int);
+    void updateStateChanged(int);
 private slots:
     void ftpCommandFinished(int,bool);
     void ftpStateChanged(int);
@@ -41,10 +49,15 @@ private slots:
 private://私有成员函数
     void connectToPatchServer();
   //  void readHostIpFromSettingsFile();
-    void parsePatchList();
+    void parsePatchList(const QStringList &, const QString &);
      void ftpRest(qint64);
 
-     void compressPatchFile();
+     QStringList extractPatchFile(QString &extr_dir);
+     void installPatch();
+     bool patchFileHasDownloaded();
+    bool deletePatchDir(const QString &dirName);
+
+    void downloadPatchPrivate();
 private:
     QString patch_server_url_;
     QString patch_file_name_;
@@ -57,6 +70,7 @@ private:
     int port_;
     QString user_name_;
     QString pwd_;
+
 
 };
 }//end namespace CUCTool
