@@ -40,6 +40,8 @@ private:
     void readConfig();
     void writeDefualtConfig(QSettings &config);
     void handleConnectEvents();
+
+    void checkVersion();
 private:
 
 

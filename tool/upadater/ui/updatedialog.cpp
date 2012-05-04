@@ -88,6 +88,7 @@ void UpdateDialog::setLabelStatus(int state)
         ui->download_status_->setText("更新完成");
         flag_btn_getpatch_ = 1;
         ui->btn_getpatch_->setDisabled(false);
+        ui->text_readme_->setText(updater_->getReadMe());
         break;
     default:break;
 

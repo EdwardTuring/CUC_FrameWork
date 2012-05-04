@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>update_logo.png</file>
         <file>icon.png</file>
+        <file>qt_zh_CN.qm</file>
     </qresource>
 </RCC>

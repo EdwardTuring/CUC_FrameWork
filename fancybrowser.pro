@@ -1,4 +1,5 @@
 QT      +=  webkit network xml
+INCLUDEPATH += ./
 HEADERS =   \
     qt4.h \
     browser.h \
@@ -40,18 +41,15 @@ SOURCES =   main.cpp \
     tool.cpp
 RESOURCES = \
     resource/icon.qrc
-TARGET =mm_client
-target.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
-sources.files = $$SOURCES $$HEADERS $$RESOURCES *.pro
-sources.path = $$[QT_INSTALL_EXAMPLES]/webkit/fancybrowser
-#INSTALLS += target sources
-#CONFIG   += console
-#DEFINES += _CUC_DEBUG_
-OTHER_FILES += \
-    icon.rc \
-    README
 RC_FILE = \
       icon.rc
+TARGET =mm_client
+OBJECTS_DIR = ./obj
+MOC_DIR = ./moc
+DESTDIR = ./bin
+RCC_DIR = ./rec
+UI_DIR = ./ui
+
 FORMS += \
     gui/ui/slidewidget.ui \
     gui/ui/repodialog.ui \

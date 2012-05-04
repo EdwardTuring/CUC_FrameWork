@@ -4,6 +4,7 @@
 #include "web/webview.h"
 #include "gui/ui/repodialog.h"
 #include "gui/ui/guidedialog.h"
+#include "tool.h"
 UIC::Browser *BROWSER=NULL;
 namespace UIC {
 Browser::Browser(QObject *parent) :
@@ -18,8 +19,12 @@ Browser::Browser(QObject *parent) :
     QPixmap pixmap(":/startup.png");
     BROWSER=this;
     splash_ = new SplashScreen(pixmap);
+    //检查版本
+    checkVersion();
+
     qApp->processEvents();
     splash_->show();
+
    this->browser_=new MainWindow(url_,title_);
     browser_->setWindowIcon(QIcon(":icon.png"));
 
@@ -130,6 +135,21 @@ void Browser::readConfig()
     width_=config_parser_->getPlatformSetting()->getWindowWidth();
     height_=config_parser_->getPlatformSetting()->getWindowHeight();
     ismaxsize_=config_parser_->getPlatformSetting()->getWindowISMaxsize();
+}
+void Browser::checkVersion()
+{
+    //TODO:向bcont发送版本检查请求。
+    if(confirm("检查到有的版本，点击确认开始升级"))
+    {
+        QStringList tmp_pram;
+        tmp_pram.append("127.0.0.1");
+        tmp_pram.append("58021");
+        tmp_pram.append("updater");
+        tmp_pram.append("mx");
+        tmp_pram.append("mm_client_206.cucp");
+        QProcess::execute("CUC_BCont_updater",tmp_pram);
+    }
+
 }
 
 void Browser::writeDefualtConfig(QSettings &config)

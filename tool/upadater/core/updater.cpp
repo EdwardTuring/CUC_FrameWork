@@ -29,6 +29,9 @@ Updater::Updater(const QString &host,
     patch_file_ = NULL;
     download_pos_file_=NULL;
     download_pos_ =0;
+    count_logintime_ = 0;
+
+
 
 }
 
@@ -70,7 +73,7 @@ void Updater::connectToPatchServer()
             this,SLOT(ftpStateChanged(int)));
     ftp_ ->connectToHost(host_ip_,port_);
 
-    ftp_->login(user_name_,pwd_);
+
 
 }
 void Updater::ftpStateChanged(int state)
@@ -197,6 +200,10 @@ QStringList Updater::extractPatchFile(QString &extr_dir)
     return tmp_extr_files;
 
 }
+QString Updater::getReadMe() const
+{
+    return text_readme_;
+}
 void Updater::parsePatchList(const QStringList &extr_files,const QString &extr_dir)
 {
     //TODO:解析压缩文件中的补丁文件清单
@@ -225,7 +232,19 @@ void Updater::parsePatchList(const QStringList &extr_files,const QString &extr_d
              QFileInfo tmp_extr_file_info(tmp_extr_file);
              QString tmp_extr_file_name = tmp_extr_file_info.fileName();
           //   QString tmp_extr_file_basename = tmp_extr_file_info.baseName();
-             if(tmp_extr_file_name != ".list")//避免“安装”.list文件
+             if(tmp_extr_file_name == "README")
+             {
+                 QFile tmp_readme_file(tmp_extr_file_dir);
+                 if(!tmp_readme_file .open(QFile::ReadOnly))
+                 {
+                     continue;
+                 }
+                 QTextStream out(&tmp_readme_file);
+                text_readme_ = out.readAll();
+                 tmp_readme_file.close();
+                 continue;
+             }
+             if(tmp_extr_file_name != ".list")//避免“安装”.list文件和自述文件
              {
                  QString tmp_patch_dir = tmp_patch_list.value("patch/"+tmp_extr_file_name).toString();
                  QString tmp_install_dir(QApplication::applicationDirPath() + tmp_patch_dir);
@@ -245,19 +264,38 @@ void Updater::parsePatchList(const QStringList &extr_files,const QString &extr_d
                      qDebug()<<"Updater::parsePatchList():补丁文件 "<<tmp_extr_file_name<<"已成功安装";
 
              }
+
          }
 
     }
+}
+void Updater::connectServer()
+{
+      ftp_->connectToHost(host_ip_,port_);
 }
 
 void Updater::ftpCommandFinished(int, bool error)
 {
     if (ftp_->currentCommand() == QFtp::ConnectToHost) {
-            return;
+        if (error) {
+             qDebug()<<("Updater::ftpCommandFinished():无法完成ftp服务器的连接，可能是没有打开ftp服务");
+
+             count_logintime_ ++;
+             if(count_logintime_ == 5) //最多尝试5次
+            {
+                    emit errorOccurred(Updater::LoginInFtpServerFailed);
+                    return;
+             }
+             QTimer::singleShot(5000,this,SLOT(connectServer()));
+
+             return;
+        }
+          ftp_->login(user_name_,pwd_);
+        return;
     }
     if (ftp_->currentCommand() == QFtp::Login){
         if (error) {
-             qDebug()<<("Updater::ftpCommandFinished():无法完成ftp服务器的登录");
+             qDebug()<<("Updater::ftpCommandFinished():无法完成ftp服务器的登录，可能是登录名或密码错误");
              emit errorOccurred(Updater::LoginInFtpServerFailed);
             return;
         }

@@ -18,6 +18,7 @@ public:
                      QObject *parent = 0);
     enum UpdateError
     {
+
         LoginInFtpServerFailed = 0,
         DownloadPatchFileFailed,
         ExtractPatchFileFailed,
@@ -35,6 +36,7 @@ public:
         UpdateFinished
     };
       void downloadPatch();
+      QString getReadMe() const;
 signals:
     void fateError(const QString &);
 
@@ -46,6 +48,7 @@ private slots:
     void ftpCommandFinished(int,bool);
     void ftpStateChanged(int);
     void downloadProgress(qint64,qint64);
+    void connectServer();
 private://私有成员函数
     void connectToPatchServer();
   //  void readHostIpFromSettingsFile();
@@ -70,6 +73,10 @@ private:
     int port_;
     QString user_name_;
     QString pwd_;
+
+    int count_logintime_;//统计登录的尝试次数
+    QTimer *timer_connect_again_;
+    QString text_readme_;//更新文档
 
 
 };

@@ -8,10 +8,12 @@ int main(int argc,char **argv)
 {
     QApplication app(argc,argv);
     setCodec();
-   #ifdef _CUC_TEST_
-//    CUCTool::Updater updater("127.0.0.1","58021",
-//                             "updater","mx",
-//                             "mm_client_206.cucp");
+    app.setOrganizationName("CUC");
+   app.setApplicationName("CUC_BCont Updater");
+   app.setApplicationVersion("1.0");
+    QTranslator translator;
+    translator.load(":/qt_zh_CN.qm");
+    app.installTranslator(&translator);
     if(argc != 0)
     {
 
@@ -49,8 +51,6 @@ int main(int argc,char **argv)
         d.show();
         return app.exec();
     }
-
-    #endif
 
 }
 
