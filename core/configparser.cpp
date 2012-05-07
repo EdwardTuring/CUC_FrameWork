@@ -9,12 +9,14 @@ PlatformSetting::PlatformSetting(const QString &host_url,
                                  bool ismaxsize,
                                  int width,
                                  int height,
+                                 const QString &product_name,
                                  QObject *parent):
     host_url_(host_url),
     title_(title),
     ismaxsize_(ismaxsize),
     width_(width),
     height_(height),
+    product_name_(product_name),
     QObject(parent)
 
 {
@@ -64,12 +66,13 @@ bool ConfigParser::parserConfigFile()
         QDataStream in(&file);
         QString host_url;
         QString title;
+         QString product_name;
         bool ismaxsize=true;
         int width=0;
         int height=0;
         //注意：下面的读入顺序不可改变！
-        in>>host_url>>title>>ismaxsize>>width>>height;
-        this->setting_=new PlatformSetting(host_url,title,ismaxsize,width,height,this);
+        in>>host_url>>title>>ismaxsize>>width>>height>>product_name;
+        this->setting_=new PlatformSetting(host_url,title,ismaxsize,width,height,product_name,this);
         file.close();
 #ifdef CUC_TEST
         setting_->tst_print();

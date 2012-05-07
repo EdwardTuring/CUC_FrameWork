@@ -1,6 +1,7 @@
 #include "updatedialog.h"
 #include "ui_updatedialog.h"
 #include "tool.h"
+#include <windows.h>
 UpdateDialog::UpdateDialog(const QString &host,
                            const QString &port,
                            const QString user_name,
@@ -78,6 +79,7 @@ void UpdateDialog::setLabelStatus(int state)
         case CUCTool::Updater::InstallingPatch:
 
             ui->download_status_->setText("°²×°²¹¶¡...");
+
             break;
     case CUCTool::Updater::CleaningPatchFiles:
 
@@ -111,6 +113,8 @@ void UpdateDialog::on_btn_getpatch__clicked()
     }
     else if(flag_btn_getpatch_ == 1)
     {
+        QProcess::start("mm_client.exe");
+
         QApplication::exit(0);
     }
 }

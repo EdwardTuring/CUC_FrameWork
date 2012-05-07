@@ -1,6 +1,7 @@
 #include "browser.h"
 #include <QSettings>
 #include <iostream>
+#include <QDomDocument>
 #include "web/webview.h"
 #include "gui/ui/repodialog.h"
 #include "gui/ui/guidedialog.h"
@@ -135,20 +136,71 @@ void Browser::readConfig()
     width_=config_parser_->getPlatformSetting()->getWindowWidth();
     height_=config_parser_->getPlatformSetting()->getWindowHeight();
     ismaxsize_=config_parser_->getPlatformSetting()->getWindowISMaxsize();
+    product_name_ = config_parser_->getPlatformSetting()->getProductName();
 }
+void Browser::versionCheckReply()
+{
+    qDebug()<<"Browser::versionCheckReply():called";
+    QByteArray tmp_a=version_check_reply_->readAll();
+    QString tmp_str=QString::fromUtf8(tmp_a);
+    qDebug()<<tmp_str;
+    //按照服务器端的php脚本所指定的规则，当返回的是空字符串时，则验证失败；
+    if(tmp_str=="")
+    {
+
+        qDebug()<<"版本验证失败";
+        return ;
+    }
+    QDomDocument doc;
+    doc.setContent(tmp_str);
+    QDomElement doc_el = doc.documentElement();
+
+    //从xml字符串tmp_str中获取有关信息
+    QString host=doc_el.firstChildElement("host").text();
+    qDebug()<<host;
+    QString port=doc_el.firstChildElement("port").text();
+    QString username=doc_el.firstChildElement("username").text();
+    QString pwd=doc_el.firstChildElement("pwd").text();
+    QString v=doc_el.firstChildElement("version").text();
+    qDebug()<<v;
+    QString patch=doc_el.firstChildElement("patch").text();
+   bool ok=false;
+    int tmp_version=v.toInt(&ok);
+    if(!ok)
+    {
+        information("无法进行版本验证");
+        QApplication::exit(0);
+    }
+    if(tmp_version > version_)
+    {
+
+        QStringList tmp_pram;
+        tmp_pram.append(host);
+        tmp_pram.append(port);
+        tmp_pram.append(username);
+        tmp_pram.append(pwd);
+        tmp_pram.append(patch+".cucp");
+     update_thread_=new RunUpdateThread(tmp_pram);
+
+     //   update_thread_->start();
+
+    }
+}
+
 void Browser::checkVersion()
 {
     //TODO:向bcont发送版本检查请求。
-    if(confirm("检查到有的版本，点击确认开始升级"))
-    {
-        QStringList tmp_pram;
-        tmp_pram.append("127.0.0.1");
-        tmp_pram.append("58021");
-        tmp_pram.append("updater");
-        tmp_pram.append("mx");
-        tmp_pram.append("mm_client_206.cucp");
-        QProcess::execute("CUC_BCont_updater",tmp_pram);
-    }
+    version_check_network_ = new QNetworkAccessManager(this);
+    QSettings *reg = new QSettings("HKEY_CURRENT_USER\\Software\\BCont Software\\"+product_name_+"\\",
+                         QSettings::NativeFormat);
+    QString tmp_id=reg->value("product_id").toString();
+    version_ = reg->value("version").toInt();
+    QNetworkRequest request(QUrl("http://bcont.cuc.edu.cn/customer/index.php/welcome/getversion/"+tmp_id));
+    request.setRawHeader("User-Agent", "CUC_FrameWork 1.4");
+    version_check_reply_=version_check_network_->get(request);
+    CONNECT(version_check_reply_,finished(),this,versionCheckReply());
+    CONNECT(version_check_reply_,error(QNetworkReply::NetworkError),this,replyError(QNetworkReply::NetworkError));
+
 
 }
 
@@ -207,5 +259,14 @@ void Browser::closeChildWindow(QWidget *child_wnd)
     {
         qDebug()<<"error when closed \n";
     }
+}
+RunUpdateThread::RunUpdateThread(const QStringList &arg):arg_(arg)
+{
+
+}
+
+void RunUpdateThread::run()
+{
+    QProcess::execute("CUC_BCont_updater",arg_);
 }
 } //namespace UIC

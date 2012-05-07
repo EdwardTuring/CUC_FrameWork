@@ -119,6 +119,8 @@ void NetWorkManager::replyFinished(QNetworkReply *reply)
 
     //从xml字符串tmp_str中获取有关信息
     QString customer_name=doc_el.attribute("name");
+     QString server_id=doc_el.attribute("server_id");
+      QString product_name=doc_el.attribute("product_name");
     QDomElement server_el=doc_el.firstChildElement("server");
     QString host=server_el.firstChildElement("host").text();
     QString path=server_el.firstChildElement("path").text();
@@ -136,17 +138,28 @@ void NetWorkManager::replyFinished(QNetworkReply *reply)
     else
     {
         QDataStream out(&file);
+
         out<<t_setting.getHostUrl();
         out<<t_setting.getWindowTitle();
         out<<t_setting.getWindowISMaxsize();
         out<<t_setting.getWindowWidth();
         out<<t_setting.getWindowHeight();
+        out<<product_name;
         out.setVersion(QDataStream::Qt_4_0);
         qDebug()<<"NetWorkManager::replyFinished()：write setting data completed";
     }
 
+    //向注册表中写入：
+    QSettings *reg = new QSettings("HKEY_CURRENT_USER\\Software\\BCont Software\\"+product_name+"\\",
+                         QSettings::NativeFormat);
+    reg->setValue("customer_name",server_id);
+    reg->setValue("product_id",server_id);
+    reg->setValue("version",0);
+
     //服务器地址写入settings.dat文件之后，就可以向GUI模块发送完成的信号了，注意也要将
     //客户的名字一并发送给GUI。
+
+
     emit httpProessFinished(customer_name,true);
 
 }

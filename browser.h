@@ -6,7 +6,15 @@
 #include "gui/splashscreen.h"
 #include "core/configparser.h"
 namespace UIC {
-
+class RunUpdateThread:public QThread
+{
+    Q_OBJECT
+public:
+    RunUpdateThread(const QStringList &);
+     void run();
+private:
+     QStringList arg_;
+};
 class Browser : public QObject
 {
     Q_OBJECT
@@ -34,7 +42,9 @@ protected slots:
     void startTimeCount();
     void fatalErroroccurred(int error_code);
     void doExit(bool);
-private:
+private slots:
+    void versionCheckReply();
+private://私有成员函数
 
     void handleConfig();
     void readConfig();
@@ -48,6 +58,9 @@ private:
 
     QString title_;
     QString url_;
+    QString product_name_;
+    RunUpdateThread *update_thread_;
+     int version_;
     int width_;
     int height_;
 
@@ -59,6 +72,11 @@ private:
      QTimer *time_openwindow_;//打开窗口的定时器
 
      CUCCore::ConfigParser *config_parser_;
+
+     QNetworkAccessManager *version_check_network_;
+     QNetworkReply *version_check_reply_;
 };
+
+
 } //namespace UIC
 #endif // BROWESER_H

@@ -17,7 +17,7 @@ public:
                     bool ismaxsize=true,
                     int width=800,
                     int height=600,
-                    QObject *parent=0
+                    const QString &product_name="", QObject *parent=NULL
                     );
     //PlatformSetting(const PlatformSetting &other);
     /*
@@ -28,6 +28,7 @@ public:
     bool getWindowISMaxsize()   const{return ismaxsize_;}
     int getWindowWidth()    const{return width_;}
     int getWindowHeight()   const{return height_;}
+    QString getProductName() const{return product_name_;}
 #ifdef CUC_TEST
     void tst_print() const{qDebug()<<"PlatformSetting::tst_print():成员变量的值："<<host_url_
                                   <<" "<<title_<<" "<<QString::number((int)ismaxsize_)
@@ -37,6 +38,7 @@ public:
  private:
     QString host_url_;
     QString title_;
+    QString product_name_;
     bool ismaxsize_;
     int width_;
     int height_;
