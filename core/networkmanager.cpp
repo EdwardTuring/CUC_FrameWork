@@ -155,7 +155,7 @@ void NetWorkManager::replyFinished(QNetworkReply *reply)
     reg->setValue("customer_name",server_id);
     reg->setValue("product_id",server_id);
     reg->setValue("version",0);
-
+    delete reg;
     //服务器地址写入settings.dat文件之后，就可以向GUI模块发送完成的信号了，注意也要将
     //客户的名字一并发送给GUI。
 

@@ -29,7 +29,7 @@ int main(int argc, char * argv[])
     QApplication app(argc, argv);
     setCodec();
     app.setOrganizationName("CUC");
-        app.setApplicationName("UICreator");
+        app.setApplicationName("mm_client");
         app.setApplicationVersion("1.3");
 
     QTranslator translator;

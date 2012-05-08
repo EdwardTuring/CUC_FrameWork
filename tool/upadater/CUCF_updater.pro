@@ -12,6 +12,7 @@ MOC_DIR = ./moc
 DESTDIR = ./bin
 INCLUDEPATH +=../../core  ../../ ../pakger/include
 LIBS += E:\Works\Git_Works\CUC_FrameWork\tool\pakger\lib\quazip.lib
+LIBS +=  $$quote(C:/Program Files/Microsoft SDKs/Windows/v6.0A/Lib/User32.lib)
 RCC_DIR = ./rec
 UI_DIR = ./ui
 HEADERS += \

@@ -5,8 +5,19 @@
 #include <QNetworkAccessManager>
 #include <QFtp>
 
+
 namespace CUCTool
 {
+class RunMainProThread:public QThread
+{
+    Q_OBJECT
+public:
+    RunMainProThread(const QStringList &,const QString &);
+     void run();
+private:
+     QStringList arg_;
+     QString app_name_;
+};
 class Updater : public QObject
 {
     Q_OBJECT
@@ -15,7 +26,10 @@ public:
                      const QString &port,
                      const QString user_name,
                      const QString pwd,const QString &patch_file_name,
-                     QObject *parent = 0);
+                     const QString &main_pro_name,
+                      const QString &version,
+                      const QString &app_name,
+                     QObject *parent);
     enum UpdateError
     {
 
@@ -36,6 +50,8 @@ public:
         UpdateFinished
     };
       void downloadPatch();
+     void  closeMainProcess();
+     void runMainPro();
       QString getReadMe() const;
 signals:
     void fateError(const QString &);
@@ -73,10 +89,13 @@ private:
     int port_;
     QString user_name_;
     QString pwd_;
-
+    QString app_name_;
+    QString main_pro_name_;
+    QString version_;
     int count_logintime_;//统计登录的尝试次数
     QTimer *timer_connect_again_;
     QString text_readme_;//更新文档
+RunMainProThread *run_mainpro_thread_;
 
 
 };

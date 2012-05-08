@@ -16,6 +16,9 @@ public:
                            const QString &port,
                            const QString user_name,
                            const QString pwd,const QString &patch_file_name,
+                          const QString &main_pro_name,
+                             const QString &version,
+                             const QString &app_name,
                            QWidget *parent = 0);
     ~UpdateDialog();
     
@@ -28,7 +31,7 @@ private slots:
 private:
     Ui::UpdateDialog *ui;
     CUCTool::Updater *updater_;
-
+    QString main_pro_name_;
     unsigned char flag_btn_getpatch_;
 };
 

@@ -6,6 +6,7 @@
 #include "gui/ui/repodialog.h"
 #include "gui/ui/guidedialog.h"
 #include "tool.h"
+#include <windows.h>
 UIC::Browser *BROWSER=NULL;
 namespace UIC {
 Browser::Browser(QObject *parent) :
@@ -162,7 +163,7 @@ void Browser::versionCheckReply()
     QString username=doc_el.firstChildElement("username").text();
     QString pwd=doc_el.firstChildElement("pwd").text();
     QString v=doc_el.firstChildElement("version").text();
-    qDebug()<<v;
+
     QString patch=doc_el.firstChildElement("patch").text();
    bool ok=false;
     int tmp_version=v.toInt(&ok);
@@ -180,21 +181,40 @@ void Browser::versionCheckReply()
         tmp_pram.append(username);
         tmp_pram.append(pwd);
         tmp_pram.append(patch+".cucp");
+         tmp_pram.append(product_name_);
+          tmp_pram.append(v);
+          qDebug()<<qApp->applicationName();
+          tmp_pram.append(qApp->applicationName());
      update_thread_=new RunUpdateThread(tmp_pram);
 
-     //   update_thread_->start();
+     update_thread_->start();
 
     }
 }
 
 void Browser::checkVersion()
 {
-    //TODO:向bcont发送版本检查请求。
+
+    //如果还有更新进程，那么停掉它
+#ifdef Q_WS_WIN
+
+    HWND tmp_hwnd =FindWindow(NULL,L"CUC_BCont updater");
+
+  if (tmp_hwnd!=NULL)
+    {
+
+     SendMessage(tmp_hwnd,WM_CLOSE,NULL,NULL);
+  }
+
+#endif
+
+
     version_check_network_ = new QNetworkAccessManager(this);
     QSettings *reg = new QSettings("HKEY_CURRENT_USER\\Software\\BCont Software\\"+product_name_+"\\",
                          QSettings::NativeFormat);
     QString tmp_id=reg->value("product_id").toString();
     version_ = reg->value("version").toInt();
+    delete reg;
     QNetworkRequest request(QUrl("http://bcont.cuc.edu.cn/customer/index.php/welcome/getversion/"+tmp_id));
     request.setRawHeader("User-Agent", "CUC_FrameWork 1.4");
     version_check_reply_=version_check_network_->get(request);

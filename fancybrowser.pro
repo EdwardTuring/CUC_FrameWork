@@ -49,7 +49,7 @@ MOC_DIR = ./moc
 DESTDIR = ./bin
 RCC_DIR = ./rec
 UI_DIR = ./ui
-
+LIBS +=  $$quote(C:/Program Files/Microsoft SDKs/Windows/v6.0A/Lib/User32.lib)
 FORMS += \
     gui/ui/slidewidget.ui \
     gui/ui/repodialog.ui \

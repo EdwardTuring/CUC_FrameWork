@@ -3,6 +3,7 @@
 #include <QApplication>
 #include "core/updater.h"
 #include "ui/updatedialog.h"
+
 void setCodec();
 int main(int argc,char **argv)
 {
@@ -47,7 +48,27 @@ int main(int argc,char **argv)
             qDebug()<<"CUC_BCont_updater:无效的参数：补丁文件名";
             return -1;
         }
-        UpdateDialog d(host,port,user_name,pwd,patch_file_name);
+        QString main_pro_name(argv[6]);
+
+        if(main_pro_name == "")
+        {
+            qDebug()<<"CUC_BCont_updater:无效的参数：主进程名无效";
+            return -1;
+        }
+        QString v(argv[7]);
+
+        if(v == "")
+        {
+            qDebug()<<"CUC_BCont_updater:无效的参数：版本号无效";
+            return -1;
+        }
+          QString app_name(argv[8]);
+        if(app_name == "")
+        {
+            qDebug()<<"CUC_BCont_updater:无效的参数：无效的应用程序名";
+            return -1;
+        }
+        UpdateDialog d(host,port,user_name,pwd,patch_file_name,main_pro_name,v,app_name);
         d.show();
         return app.exec();
     }

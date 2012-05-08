@@ -7,12 +7,15 @@ UpdateDialog::UpdateDialog(const QString &host,
                            const QString user_name,
                            const QString pwd,
                            const QString &patch_file_name,
-                           QWidget *parent) :
+                           const QString &main_pro_name,
+                            const QString &version,
+                           const QString &app_name, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::UpdateDialog)
 {
-
-    updater_= new CUCTool::Updater(host,port,user_name,pwd,patch_file_name,this);
+    main_pro_name_=main_pro_name;
+    updater_= new CUCTool::Updater(host,port,user_name,pwd,patch_file_name,main_pro_name,version,app_name,this);
+  updater_->closeMainProcess();
     ui->setupUi(this);
     setFixedSize(600,414);
     ui->frame_download_->hide();
@@ -109,12 +112,13 @@ void UpdateDialog::on_btn_getpatch__clicked()
 
         updater_->downloadPatch();
          ui->btn_getpatch_->setText("完成");
+         //TODO:停掉主程序
+
          return;
     }
     else if(flag_btn_getpatch_ == 1)
     {
-        QProcess::start("mm_client.exe");
-
-        QApplication::exit(0);
+        hide();
+        updater_->runMainPro();
     }
 }

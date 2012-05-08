@@ -4,19 +4,26 @@
 #include <QFile>
 #include "quazipfile.h"
 #include "JlCompress.h"
+#include <windows.h>
 using namespace CUCTool;
 Updater::Updater(const QString &host,
                  const QString &port,
                  const QString user_name,
                  const QString pwd,
                  const QString &patch_file_name,
-                 QObject *parent) :
+                   const QString &main_pro_name,
+                 const QString & version,
+
+                 const QString &app_name, QObject *parent) :
     QObject(parent),
     patch_file_name_(patch_file_name),
     host_ip_(host),
     port_(port.toInt()),
     user_name_(user_name),
-    pwd_(pwd)
+    pwd_(pwd),
+    main_pro_name_(main_pro_name),
+    version_(version),
+    app_name_(app_name)
 {
     ftp_ = NULL;
     QDir tmp_patch_dir(QApplication::applicationDirPath());
@@ -31,6 +38,7 @@ Updater::Updater(const QString &host,
     download_pos_ =0;
     count_logintime_ = 0;
 
+    run_mainpro_thread_ = new RunMainProThread(QStringList(),app_name_);
 
 
 }
@@ -119,6 +127,24 @@ void Updater::downloadProgress(qint64 readbytes, qint64 allbytes)
 
 }
 
+void Updater::closeMainProcess()
+{
+    LPCWSTR tmp = app_name_.utf16();
+
+#ifdef Q_WS_WIN
+
+  HWND tmp_hwnd =FindWindow(NULL,tmp);
+
+  if (tmp_hwnd==NULL)
+    {
+
+      return;
+  }
+  SendMessage(tmp_hwnd,WM_CLOSE,NULL,NULL);
+
+#endif
+}
+
 void Updater::downloadPatchPrivate()
 {
 
@@ -179,6 +205,12 @@ void Updater::installPatch()
     QString tmp_patch_file_basename=tmp_patch_file_info.baseName();
     deletePatchDir(patch_dir_+"/"+tmp_patch_file_basename);
     patch_file_->remove();
+    //处理注册表中的版本号
+    QSettings *reg = new QSettings("HKEY_CURRENT_USER\\Software\\BCont Software\\"+main_pro_name_+"\\",
+                         QSettings::NativeFormat);
+
+   reg->setValue("version",version_);
+    delete reg;
      emit updateStateChanged(Updater::UpdateFinished);
 
 }
@@ -366,5 +398,20 @@ bool Updater::deletePatchDir(const QString &dirName)
     }
 
     return !error;
+
+}
+void Updater::runMainPro()
+{
+    run_mainpro_thread_->start();
+}
+
+RunMainProThread::RunMainProThread(const QStringList &arg, const QString &app_name)
+{
+    arg_ = arg;
+    app_name_=app_name;
+}
+void RunMainProThread::run()
+{
+    QProcess::execute(app_name_+".exe");
 
 }
