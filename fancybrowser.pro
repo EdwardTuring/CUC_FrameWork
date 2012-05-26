@@ -1,4 +1,4 @@
-QT      +=  webkit network xml
+QT      +=  webkit  xml network
 INCLUDEPATH += ./
 HEADERS =   \
     qt4.h \

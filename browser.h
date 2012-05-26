@@ -2,6 +2,9 @@
 #define BROWESER_H
 
 #include "qt4.h"
+#include "tool.h"
+#include <QNetworkReply.h>
+#include <QNetworkRequest.h>
 #include "gui/mainwindow.h"
 #include "gui/splashscreen.h"
 #include "core/configparser.h"
@@ -44,14 +47,18 @@ protected slots:
     void doExit(bool);
 private slots:
     void versionCheckReply();
+    void serverCheckReply();
+    void serverCheckReplyError(QNetworkReply::NetworkError);
+    void versionCheckReplyError(QNetworkReply::NetworkError);
 private://私有成员函数
 
     void handleConfig();
     void readConfig();
     void writeDefualtConfig(QSettings &config);
     void handleConnectEvents();
-
+    void checkWorks();
     void checkVersion();
+    void checkServerStatus();
 private:
 
 
@@ -73,8 +80,9 @@ private:
 
      CUCCore::ConfigParser *config_parser_;
 
-     QNetworkAccessManager *version_check_network_;
+     QNetworkAccessManager *check_network_;
      QNetworkReply *version_check_reply_;
+     QNetworkReply *server_check_reply_;
 };
 
 

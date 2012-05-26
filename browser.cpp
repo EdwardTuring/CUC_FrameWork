@@ -6,7 +6,7 @@
 #include "gui/ui/repodialog.h"
 #include "gui/ui/guidedialog.h"
 #include "tool.h"
-#include <windows.h>
+#include <Windows.h>
 UIC::Browser *BROWSER=NULL;
 namespace UIC {
 Browser::Browser(QObject *parent) :
@@ -21,35 +21,8 @@ Browser::Browser(QObject *parent) :
     QPixmap pixmap(":/startup.png");
     BROWSER=this;
     splash_ = new SplashScreen(pixmap);
-    //检查版本
-    checkVersion();
 
-    qApp->processEvents();
-    splash_->show();
-
-   this->browser_=new MainWindow(url_,title_);
-    browser_->setWindowIcon(QIcon(":icon.png"));
-
-    if(this->ismaxsize_)
-    {
-
-        browser_->showMaxSizeScreen();
-
-    }
-    else
-    {
-        browser_->resize(this->width_,this->height_);
-        QDesktopWidget* desktopWidget = QApplication::desktop();
-        //获取可用桌面大小
-        QRect d = desktopWidget->availableGeometry();
-        browser_->move((d.width()-width_)/2,(d.height()-height_)/2);
-    }
-
-    handleConnectEvents();//注意：必须在所连接的对象构造完成之后调用！所以一般放在构造函数的最后
-
-
-
-
+    checkWorks();
 
 }
 void Browser::fatalErroroccurred(int error_code)
@@ -165,7 +138,7 @@ void Browser::versionCheckReply()
     QString v=doc_el.firstChildElement("version").text();
 
     QString patch=doc_el.firstChildElement("patch").text();
-   bool ok=false;
+    bool ok=false;
     int tmp_version=v.toInt(&ok);
     if(!ok)
     {
@@ -181,15 +154,24 @@ void Browser::versionCheckReply()
         tmp_pram.append(username);
         tmp_pram.append(pwd);
         tmp_pram.append(patch+".cucp");
-         tmp_pram.append(product_name_);
-          tmp_pram.append(v);
-          qDebug()<<qApp->applicationName();
-          tmp_pram.append(qApp->applicationName());
-     update_thread_=new RunUpdateThread(tmp_pram);
+        tmp_pram.append(product_name_);
+        tmp_pram.append(v);
+        qDebug()<<qApp->applicationName();
+        tmp_pram.append(qApp->applicationName());
+        update_thread_=new RunUpdateThread(tmp_pram);
 
-     update_thread_->start();
+        update_thread_->start();
 
     }
+}
+void Browser::checkWorks()
+{
+    check_network_ = new QNetworkAccessManager(this);
+
+    //检查版本
+    checkVersion();
+    //TODO:在此处进行服务器的连接测;
+    checkServerStatus();
 }
 
 void Browser::checkVersion()
@@ -200,45 +182,105 @@ void Browser::checkVersion()
 
     HWND tmp_hwnd =FindWindow(NULL,L"CUC_BCont updater");
 
-  if (tmp_hwnd!=NULL)
+    if (tmp_hwnd!=NULL)
     {
 
-     SendMessage(tmp_hwnd,WM_CLOSE,NULL,NULL);
-  }
+        SendMessage(tmp_hwnd,WM_CLOSE,NULL,NULL);
+    }
 
 #endif
 
-
-    version_check_network_ = new QNetworkAccessManager(this);
     QSettings *reg = new QSettings("HKEY_CURRENT_USER\\Software\\BCont Software\\"+product_name_+"\\",
-                         QSettings::NativeFormat);
+                                   QSettings::NativeFormat);
     QString tmp_id=reg->value("product_id").toString();
     version_ = reg->value("version").toInt();
     delete reg;
     QNetworkRequest request(QUrl("http://bcont.cuc.edu.cn/customer/index.php/welcome/getversion/"+tmp_id));
     request.setRawHeader("User-Agent", "CUC_FrameWork 1.4");
-    version_check_reply_=version_check_network_->get(request);
+    version_check_reply_=check_network_->get(request);
     CONNECT(version_check_reply_,finished(),this,versionCheckReply());
-    CONNECT(version_check_reply_,error(QNetworkReply::NetworkError),this,replyError(QNetworkReply::NetworkError));
+    CONNECT(version_check_reply_,error(QNetworkReply::NetworkError),
+            this,versionCheckReplyError(QNetworkReply::NetworkError));
+
+
+}
+void Browser::versionCheckReplyError(QNetworkReply::NetworkError)
+{
+
+}
+
+void Browser::checkServerStatus()
+{
+    QUrl url(url_);
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", "CUC_FrameWork 1.4");
+    server_check_reply_=check_network_->get(request);
+    CONNECT(server_check_reply_,finished(),this,serverCheckReply());
+    CONNECT(server_check_reply_,error(QNetworkReply::NetworkError),
+            this,serverCheckReplyError(QNetworkReply::NetworkError));
+}
+void Browser::serverCheckReply()
+{
+    //do nothing....
+    qDebug()<<"Browser::serverCheckReply() called";
+    qApp->processEvents();
+    splash_->show();
+
+    this->browser_=new MainWindow(url_,title_);
+    browser_->setWindowIcon(QIcon(":icon.png"));
+
+    if(this->ismaxsize_)
+    {
+
+        browser_->showMaxSizeScreen();
+
+    }
+    else
+    {
+        browser_->resize(this->width_,this->height_);
+        QDesktopWidget* desktopWidget = QApplication::desktop();
+        //获取可用桌面大小
+        QRect d = desktopWidget->availableGeometry();
+        browser_->move((d.width()-width_)/2,(d.height()-height_)/2);
+    }
+
+    handleConnectEvents();//注意：必须在所连接的对象构造完成之后调用！所以一般放在构造函数的最后
+
+}
+void Browser::serverCheckReplyError(QNetworkReply::NetworkError error)
+{
+  qDebug()<<"Browser::serverCheckReplyError() called";
+    if(error == QNetworkReply :: NoError)
+    {
+
+           }
+
+        if(QNetworkReply :: HostNotFoundError)
+        {
+                //主机未找到，删除验证文件，以重新验证
+                deletePatchDir(qApp->applicationDirPath() + "/data");
+                handleConfig();
+        }
+
 
 
 }
 
 void Browser::writeDefualtConfig(QSettings &config)
 {
-//已废弃。
+    //已废弃。
     //    QString keys[]={"url","title","width","height","maxsize"};
-//    QMap<QString,QString> attribute;
-//    attribute["url"]="http://www.baidu.com";
-//    attribute["title"]="基于Webkit的Web App支撑平台";
-//    attribute["width"]="800";
-//    attribute["height"]="600";
-//    attribute["maxsize"]="0";
-//    for(int i=0;i<attribute.size();i++)
-//    {
-//        config.setValue("CUC_FrameWork/"+keys[i], attribute.value(keys[i]));
+    //    QMap<QString,QString> attribute;
+    //    attribute["url"]="http://www.baidu.com";
+    //    attribute["title"]="基于Webkit的Web App支撑平台";
+    //    attribute["width"]="800";
+    //    attribute["height"]="600";
+    //    attribute["maxsize"]="0";
+    //    for(int i=0;i<attribute.size();i++)
+    //    {
+    //        config.setValue("CUC_FrameWork/"+keys[i], attribute.value(keys[i]));
 
-//    }
+    //    }
 }
 void Browser::startTimeCount()
 {

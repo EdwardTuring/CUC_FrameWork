@@ -12,6 +12,6 @@ inline  QString getCurrentDir()
 {
     return qApp->applicationDirPath()+"/";
 }
-
+bool deletePatchDir(const QString &dirName);
 
 #endif // TOOL_H
