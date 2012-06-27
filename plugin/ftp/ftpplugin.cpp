@@ -61,7 +61,6 @@ bool SqlHelper::connectDB()
         return false;
     }
     return true;
-
 }
 void SqlHelper::closeDB()
 {
