@@ -1,8 +1,7 @@
 #include "networkmanager.h"
 #include "tool.h"
 #include "configparser.h"
-// #include <QDomElement>
-#include <QScriptEngine>
+ #include <QDomElement>
 namespace CUCCore{
 NetWorkManager::NetWorkManager(const QString &url,QObject *parent) :
     QNetworkAccessManager(parent)
@@ -114,18 +113,18 @@ void NetWorkManager::replyFinished(QNetworkReply *reply)
         qDebug()<<"验证失败";
         return ;
     }
-//    QDomDocument doc;
-//    doc.setContent(tmp_str);
-//    QDomElement doc_el = doc.documentElement();
+    QDomDocument doc;
+    doc.setContent(tmp_str);
+    QDomElement doc_el = doc.documentElement();
 
-//    //从xml字符串tmp_str中获取有关信息
-//    QString customer_name=doc_el.attribute("name");
-//     QString server_id=doc_el.attribute("server_id");
-//      QString product_name=doc_el.attribute("product_name");
-//    QDomElement server_el=doc_el.firstChildElement("server");
-//    QString host=server_el.firstChildElement("host").text();
-//    QString path=server_el.firstChildElement("path").text();
-//    QString url=host+"/"+path;
+    //从xml字符串tmp_str中获取有关信息
+    QString customer_name=doc_el.attribute("name");
+     QString server_id=doc_el.attribute("server_id");
+      QString product_name=doc_el.attribute("product_name");
+    QDomElement server_el=doc_el.firstChildElement("server");
+    QString host=server_el.firstChildElement("host").text();
+    QString path=server_el.firstChildElement("path").text();
+    QString url=host+"/"+path;
 
     //将得到的客户名字和服务器地址以二进制形式存入settings.dat中
     PlatformSetting t_setting(url,"北京城乡新媒体视频内容管理平台");
